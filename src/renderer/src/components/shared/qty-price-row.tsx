@@ -1,3 +1,4 @@
+import type { QtyPriceHeaderProps } from './types'
 import { useState } from 'react'
 import { Add, Minus, Trash } from 'reicon-react'
 
@@ -113,9 +114,14 @@ export function QtyPriceRow({
 }
 
 // The two column headings that sit above the first line, right-aligned with the price and total columns.
-export function QtyPriceHeader({ priceLabel }: { priceLabel: string }): React.JSX.Element {
+export function QtyPriceHeader({ priceLabel, onClear }: QtyPriceHeaderProps): React.JSX.Element {
   return (
     <div className="flex items-center justify-end gap-2 px-4 pt-3 text-xs text-muted-foreground">
+      {onClear ? (
+        <Button variant="ghost" size="xs" className="mr-auto" onClick={onClear}>
+          Clear
+        </Button>
+      ) : null}
       <span className={priceColumn}>{priceLabel}</span>
       <span className={totalColumn}>Total</span>
       <span className="w-6 shrink-0" />

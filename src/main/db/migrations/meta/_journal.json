@@ -64,6 +64,13 @@
       "when": 1794166930970,
       "tag": "0008_soft_delete_products",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1794168613601,
+      "tag": "0009_settings_defaults",
+      "breakpoints": true
     }
   ]
 }

@@ -18,7 +18,6 @@ import { formatCurrency } from '@/lib/format'
 import { popularBrands } from '../constants'
 import { useProductForm } from '../hooks/use-product-form'
 import type { ProductFormDialogProps, ProductFormProps } from '../types'
-import { DEFAULT_MARKUP } from '../utils'
 
 export function ProductFormDialog({
   open,
@@ -65,6 +64,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
     suggested,
     price,
     profit,
+    markupPercent,
     text,
     pick,
     submit
@@ -154,7 +154,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
         <FormField
           label="Selling price (Rs)"
           htmlFor="p-sale"
-          hint={`Leave empty and we add ${Math.round(DEFAULT_MARKUP * 100)}% to the cost price. You can change it on each sale.`}
+          hint={`Leave empty and we add ${markupPercent}% to the cost price. You can change it on each sale.`}
         >
           <Input
             id="p-sale"

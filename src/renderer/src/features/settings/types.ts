@@ -11,4 +11,6 @@ export type ShopSettingsFormProps = {
   settings: ShopSettings
 }
 
+export type ShopSettingsFormFields = Record<keyof ShopSettings, string>
+
 export type ShopSettingsErrors = Record<string, string>

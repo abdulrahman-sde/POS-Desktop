@@ -2,10 +2,7 @@ import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { useInvoiceViewer } from '@/app/providers/invoice-viewer-context'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { plural } from '@/lib/format'
 import { PosCartLines } from '@/features/sales/components/pos-cart-lines'
 import { PosCheckout } from '@/features/sales/components/pos-checkout'
 import { PosProductPicker } from '@/features/sales/components/pos-product-picker'
@@ -69,28 +66,7 @@ export function NewSalePage(): React.JSX.Element {
       </div>
 
       <Card className="min-h-0 gap-0 py-0 md:w-84 lg:w-90">
-        <div className="flex flex-col gap-0.5 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span>Current sale</span>
-              {cart.itemCount > 0 ? (
-                <Badge variant="secondary">{plural(cart.itemCount, 'item')}</Badge>
-              ) : null}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={cart.items.length === 0}
-              onClick={cart.reset}
-            >
-              Clear
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Change the quantity or the sale price if needed.
-          </p>
-        </div>
-        <div className="min-h-0 flex-1 overflow-auto border-t">
+        <div className="min-h-0 flex-1 overflow-auto">
           <PosCartLines cart={cart} />
         </div>
         <PosCheckout cart={cart} onSubmit={submit} />

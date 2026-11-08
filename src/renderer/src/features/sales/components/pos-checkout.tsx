@@ -6,21 +6,14 @@ import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { OptionSelect } from '@/components/shared/option-select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { CustomerFormDialog } from '@/features/customers/components/customer-form-dialog'
 import { formatCurrency } from '@/lib/format'
 import { WALK_IN, type PosCart } from '../hooks/use-pos-cart'
-import { paymentMethodLabels, type PaymentMethod } from '../types'
 
 type PosCheckoutProps = {
   cart: PosCart
   onSubmit: () => void
 }
-
-const methodOptions = (Object.keys(paymentMethodLabels) as PaymentMethod[]).map((value) => ({
-  value,
-  label: paymentMethodLabels[value]
-}))
 
 function SummaryRow({
   label,
@@ -116,26 +109,6 @@ export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Ele
         </div>
       </div>
 
-      {/* The one place the walk-in rule is explained */}
-      <p className="text-xs text-muted-foreground">
-        {cart.isWalkIn
-          ? 'Walk-in customers must pay the full amount.'
-          : 'Leave 0 if they will pay later.'}
-      </p>
-
-      {/* Always shown (greyed out until money is received), so the panel never changes size */}
-      <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="pos-method">How did they pay?</Label>
-        <OptionSelect
-          id="pos-method"
-          className="w-40"
-          disabled={cart.advance <= 0}
-          value={cart.method}
-          onValueChange={(value) => cart.setMethod(value as PaymentMethod)}
-          options={methodOptions}
-        />
-      </div>
-
       <div className="flex flex-col gap-0.5 rounded-lg bg-muted px-3 py-2">
         {cart.discount > 0 ? (
           <>
@@ -156,10 +129,15 @@ export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Ele
         </div>
       </div>
 
-      <Button size="lg" className="h-10" disabled={cart.problem !== ''} onClick={onSubmit}>
+      <Button
+        size="lg"
+        className="h-10"
+        disabled={cart.problem !== ''}
+        title={cart.problem || undefined}
+        onClick={onSubmit}
+      >
         Create invoice
       </Button>
-      {/* No second walk-in message here: the line above already says it */}
       <CustomerFormDialog
         open={newCustomerOpen}
         onOpenChange={setNewCustomerOpen}

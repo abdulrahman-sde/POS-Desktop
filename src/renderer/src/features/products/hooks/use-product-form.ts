@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 
 import { addProductSchema } from '@shared/products/schema'
 import { useCategories } from '@/features/categories/hooks/use-categories'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 import { toNumber } from '@/lib/format'
 import type { ProductFormErrors, ProductFormFields, ProductFormProps } from '../types'
 import { autoSalePrice } from '../utils'
@@ -20,6 +21,7 @@ export function useProductForm({
   const addProduct = useAddProduct()
   const updateProduct = useUpdateProduct()
   const { categories } = useCategories()
+  const { settings } = useSettings()
   const [form, setForm] = useState<ProductFormFields>({
     name: draft?.values.name ?? product?.name ?? '',
     category: draft?.values.category ?? product?.category ?? categories[0]?.name ?? '',
@@ -27,7 +29,9 @@ export function useProductForm({
     costPrice: String(draft?.values.costPrice ?? product?.costPrice ?? ''),
     salePrice: String(draft ? (draft.values.salePrice ?? '') : (product?.salePrice ?? '')),
     stock: draft ? String(draft.values.quantity) : product ? String(product.stock) : '',
-    reorderLevel: String(draft?.values.reorderLevel ?? product?.reorderLevel ?? '5'),
+    reorderLevel: String(
+      draft?.values.reorderLevel ?? product?.reorderLevel ?? settings.defaultReorderLevel
+    ),
     shelf: draft?.values.shelf ?? product?.shelf ?? ''
   })
   const [errors, setErrors] = useState<ProductFormErrors>({})
@@ -39,7 +43,7 @@ export function useProductForm({
   if (form.category && !categoryNames.includes(form.category)) categoryNames.push(form.category)
 
   const cost = toNumber(form.costPrice)
-  const suggested = cost > 0 ? autoSalePrice(cost) : 0
+  const suggested = cost > 0 ? autoSalePrice(cost, settings.defaultMarkupPercent) : 0
   const price = toNumber(form.salePrice) > 0 ? toNumber(form.salePrice) : suggested
   const profit = price - cost
 
@@ -87,7 +91,7 @@ export function useProductForm({
         costPrice: values.costPrice,
         salePrice: values.salePrice ?? null,
         quantity: stock,
-        reorderLevel: values.reorderLevel ?? 5,
+        reorderLevel: values.reorderLevel ?? settings.defaultReorderLevel,
         shelf: values.shelf ?? ''
       })
       onDone()
@@ -129,6 +133,7 @@ export function useProductForm({
     suggested,
     price,
     profit,
+    markupPercent: settings.defaultMarkupPercent,
     text,
     pick,
     submit

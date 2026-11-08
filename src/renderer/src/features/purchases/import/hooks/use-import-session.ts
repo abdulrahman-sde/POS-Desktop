@@ -10,6 +10,7 @@ import { OTHERS_CATEGORY } from '@/features/categories/types'
 import { productsApi } from '@/features/products/api/products.api'
 import { productKeys } from '@/features/products/api/products.keys'
 import { useProducts } from '@/features/products/hooks/use-products'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 import { unwrap } from '@/lib/api-result'
 import { roundMoney } from '@shared/money'
 import { extractInvoice } from '../extract'
@@ -28,6 +29,7 @@ export function useImportSession() {
   const queryClient = useQueryClient()
   const { products } = useProducts()
   const { categories } = useCategories()
+  const { settings } = useSettings()
   const [session, setSession] = useState<ImportSession | null>(null)
 
   const start = async (file: File): Promise<boolean> => {
@@ -47,7 +49,12 @@ export function useImportSession() {
           costPrice: roundMoney(line.costPrice),
           productId: match?.id ?? null,
           included: true,
-          details: { brand: '', salePrice: null, reorderLevel: 5, shelf: '' }
+          details: {
+            brand: '',
+            salePrice: null,
+            reorderLevel: settings.defaultReorderLevel,
+            shelf: ''
+          }
         }
       })
       setSession((prev) =>
@@ -83,7 +90,12 @@ export function useImportSession() {
                 costPrice: 0,
                 productId: null,
                 included: true,
-                details: { brand: '', salePrice: null, reorderLevel: 5, shelf: '' }
+                details: {
+                  brand: '',
+                  salePrice: null,
+                  reorderLevel: settings.defaultReorderLevel,
+                  shelf: ''
+                }
               }
             ]
           }

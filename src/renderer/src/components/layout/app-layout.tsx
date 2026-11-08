@@ -3,6 +3,7 @@ import { Download } from 'reicon-react'
 import { Outlet, useLocation } from 'react-router'
 
 import { Button } from '@/components/ui/button'
+import { usePrefetchSettings } from '@/features/settings/hooks/use-prefetch-settings'
 import { useBackup } from '@/hooks/use-backup'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -13,6 +14,7 @@ export function AppLayout(): React.JSX.Element {
   const { pathname } = useLocation()
   const title = findNavItem(pathname)?.label ?? ''
   const saveBackup = useBackup()
+  usePrefetchSettings()
 
   // On a small window the sidebar folds to icons by itself, so the page gets the room.
   // He can still open or close it with the button. It only re-decides when the window crosses 1024px.

@@ -9,6 +9,7 @@ import type {
 } from '@shared/products/types'
 import { autoSalePrice } from '@shared/products/pricing'
 import { getDb } from '../../db/connection'
+import { readSettings } from '../settings/settings.service'
 import { UserError } from '../../lib/ipc'
 import * as q from './products.queries'
 
@@ -27,6 +28,7 @@ export function addProduct(input: AddProductInput): Product {
       throw new UserError('You already have a product with this name.')
     }
 
+    const defaults = readSettings(tx)
     const id = randomUUID()
     q.insertProduct(tx, {
       id,
@@ -38,9 +40,9 @@ export function addProduct(input: AddProductInput): Product {
       shelf: input.shelf?.trim() ?? '',
       costPrice: input.costPrice,
       // No selling price typed: use the cost price plus 15%.
-      salePrice: input.salePrice ?? autoSalePrice(input.costPrice),
+      salePrice: input.salePrice ?? autoSalePrice(input.costPrice, defaults.defaultMarkupPercent),
       stock: input.stock ?? 0,
-      reorderLevel: input.reorderLevel ?? 5,
+      reorderLevel: input.reorderLevel ?? defaults.defaultReorderLevel,
       createdAt: new Date().toISOString()
     })
     return q.findProductById(tx, id)!

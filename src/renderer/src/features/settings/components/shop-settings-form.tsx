@@ -19,8 +19,10 @@ function SettingsFields(props: ShopSettingsFormProps): React.JSX.Element {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Shop details</CardTitle>
-        <CardDescription>These appear on every invoice and WhatsApp message.</CardDescription>
+        <CardTitle>Shop settings</CardTitle>
+        <CardDescription>
+          Your shop details appear on every invoice and WhatsApp message.
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -48,6 +50,46 @@ function SettingsFields(props: ShopSettingsFormProps): React.JSX.Element {
         <FormField label="Invoice footer note" htmlFor="st-note" error={errors.invoiceNote}>
           <Textarea id="st-note" value={form.invoiceNote} onChange={set('invoiceNote')} />
         </FormField>
+
+        <div className="mt-2 flex flex-col gap-1 border-t border-foreground/10 pt-4">
+          <h3 className="text-sm">Starting values for new products</h3>
+          <p className="text-sm text-muted-foreground">
+            These fill in the Add product form for you. You can still change them on each product.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FormField
+            label="Warn me when stock is"
+            htmlFor="st-reorder"
+            error={errors.defaultReorderLevel}
+            hint="A product shows as low stock at this number or below."
+          >
+            <Input
+              id="st-reorder"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              value={form.defaultReorderLevel}
+              onChange={set('defaultReorderLevel')}
+            />
+          </FormField>
+          <FormField
+            label="Selling price: add this % to the cost price"
+            htmlFor="st-markup"
+            error={errors.defaultMarkupPercent}
+            hint="Used when you leave the selling price empty."
+          >
+            <Input
+              id="st-markup"
+              type="number"
+              inputMode="decimal"
+              step="any"
+              min={0}
+              value={form.defaultMarkupPercent}
+              onChange={set('defaultMarkupPercent')}
+            />
+          </FormField>
+        </div>
         <div>
           <Button onClick={submit} disabled={saving}>
             Save settings

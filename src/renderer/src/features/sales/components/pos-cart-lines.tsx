@@ -18,7 +18,7 @@ export function PosCartLines({ cart }: { cart: PosCart }): React.JSX.Element {
   return (
     // min-w keeps the row from being squashed. In a narrow panel the list gets a scrollbar at the bottom.
     <div className="min-w-80">
-      <QtyPriceHeader priceLabel="Sale price" />
+      <QtyPriceHeader priceLabel="Sale price" onClear={cart.reset} />
       <ul className="flex flex-col gap-2 p-2">
         {cart.items.map((item) => (
           <li
