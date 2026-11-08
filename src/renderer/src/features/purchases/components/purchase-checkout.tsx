@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Add } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
+import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers'
 import { FormField } from '@/components/shared/form-field'
 import { OptionSelect } from '@/components/shared/option-select'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,7 @@ export function PurchaseCheckout({
   cart: PurchaseCart
   onSubmit: () => void
 }): React.JSX.Element {
-  const { suppliers } = useData()
+  const { suppliers } = useSuppliers()
   const [newSupplierOpen, setNewSupplierOpen] = useState(false)
 
   return (

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useData, type NewPurchaseInput } from '@/app/providers/data-context'
+import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import type { PaymentMethod } from '@/features/sales/types'
@@ -14,9 +15,11 @@ type Line = { productId: string; qty: number; costPrice: number }
 // All the state and rules of the Buy Stock screen: the bill lines, the supplier, and the money paid.
 export function usePurchaseCart() {
   const { products } = useProducts()
-  const { suppliers, purchases, supplierPayments } = useData()
+  const { suppliers } = useSuppliers()
+  const { purchases, supplierPayments } = useData()
   const [lines, setLines] = useState<Line[]>([])
-  const [supplierId, setSupplierId] = useState(suppliers[0]?.id ?? '')
+  const [pickedSupplierId, setSupplierId] = useState('')
+  const supplierId = pickedSupplierId || suppliers[0]?.id || ''
   // Money paid to the supplier now. Starts at 0. null means "the full amount".
   const [paidInput, setPaidInput] = useState<string | null>('0')
   const [method, setMethod] = useState<PaymentMethod>('cash')

@@ -42,9 +42,9 @@ One feature goes through these layers, in order:
 - `features/<feature>/api/`: `<feature>.api.ts` only calls `window.api` and returns the raw `{ ok, data } | { ok: false, message }` answer; `<feature>.keys.ts` holds the React Query keys.
 - `features/<feature>/hooks/`: `useX` (read, via `useApiQuery`) and mutation hooks (via `useApiMutation`, which unwraps the answer). A write hook invalidates every key whose data it changed. Form logic (state, validation, submit) lives in a hook too, so components only render.
 
-Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted; a category only when it has no products.
+Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted, nor a supplier you still owe; a category only when it has no products.
 
-Components never fetch or save directly. Done so far: categories, products and customers. Suppliers, sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
+Components never fetch or save directly. Done so far: categories, products, customers and suppliers. Sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
 
 ## Code style
 
@@ -79,7 +79,7 @@ A product has two prices: **cost price** (required) and **usual selling price** 
 
 A supplier belongs to a **bill**, not to a product (products have no supplier field). The shop has one main supplier for now, but the app supports many.
 - **Buy stock** (`/stock/new`, `features/purchases/`) is how a supplier's bill is entered. It works like New Sale: pick the supplier, search or scan a product, type quantity and cost for each piece, type Money paid, save. Saving adds the quantities to stock and sets each product's cost price to the cost on the bill. If the product is not in the list, "Add as a new product" opens the normal product form inside the bill, and the new product lands on the bill. A product already on the bill gets +1 instead of a second line.
-- **Suppliers** (`/suppliers`, `features/suppliers/`): add, edit, delete (only when it has no bills). Shows Total bought and **You owe** per supplier, a **Pay** button (money paid later), and a Stock bills tab listing every bill.
+- **Suppliers** (`/suppliers`, `features/suppliers/`): add, edit, delete (hidden, not removed; not while you still owe them money). Supplier names are unique ignoring capitals. Shows Total bought and **You owe** per supplier, a **Pay** button (money paid later), and a Stock bills tab listing every bill.
 - Money model mirrors customers: a bill stores `paid` at the time, later money is a `SupplierPayment`; `features/purchases/utils.ts` (`supplierOwed`) works out what is still owed.
 - Profit and loss reporting comes later with Reports.
 

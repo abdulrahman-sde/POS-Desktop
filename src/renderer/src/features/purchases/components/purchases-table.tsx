@@ -1,6 +1,7 @@
 import { Receipt2 } from 'reicon-react'
 
 import { useData } from '@/app/providers/data-context'
+import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers'
 import { EmptyState } from '@/components/shared/empty-state'
 import { Card } from '@/components/ui/card'
 import {
@@ -16,7 +17,8 @@ import { purchaseSubtotal } from '../utils'
 
 // Every bill received from a supplier, newest first.
 export function PurchasesTable(): React.JSX.Element {
-  const { purchases, suppliers } = useData()
+  const { purchases } = useData()
+  const { allSuppliers: suppliers } = useSuppliers()
   const bills = [...purchases].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
   return (

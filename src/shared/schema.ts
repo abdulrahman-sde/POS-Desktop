@@ -3,3 +3,4 @@
 export * from './categories/table'
 export * from './customers/table'
 export * from './products/table'
+export * from './suppliers/table'

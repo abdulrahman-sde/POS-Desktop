@@ -6,11 +6,9 @@ import { newId } from '@/lib/format'
 import type { Payment } from '@/features/payments/types'
 import type { Purchase, SupplierPayment } from '@/features/purchases/types'
 import type { Order } from '@/features/sales/types'
-import type { Supplier } from '@/features/suppliers/types'
 import { DataContext, type DataContextValue } from './data-context'
 
 export function DataProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [supplierPayments, setSupplierPayments] = useState<SupplierPayment[]>([])
   const [orders, setOrders] = useState<Order[]>([])
@@ -20,22 +18,12 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
   const invoices = useMemo(() => summarizeInvoices(orders, payments), [orders, payments])
 
   const value: DataContextValue = {
-    suppliers,
     purchases,
     supplierPayments,
     orders,
     payments,
     settings,
     invoices,
-
-    addSupplier: (input) => {
-      const supplier = { ...input, id: newId('s'), createdAt: new Date().toISOString() }
-      setSuppliers((prev) => [...prev, supplier])
-      return supplier
-    },
-    updateSupplier: (id, patch) =>
-      setSuppliers((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s))),
-    deleteSupplier: (id) => setSuppliers((prev) => prev.filter((s) => s.id !== id)),
 
     // Saving a bill from a supplier adds the items to your stock, and the cost on the bill
     // becomes the product's new cost price.

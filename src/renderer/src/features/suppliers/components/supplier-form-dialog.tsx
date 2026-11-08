@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
-
-import { useData } from '@/app/providers/data-context'
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,14 +10,8 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import type { Supplier } from '../types'
-
-type SupplierFormDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  supplier?: Supplier // when set, we are editing
-  onSaved?: (supplier: Supplier) => void
-}
+import { useSupplierForm } from '../hooks/use-supplier-form'
+import type { SupplierFormDialogProps, SupplierFormProps } from '../types'
 
 export function SupplierFormDialog({
   open,
@@ -40,52 +30,9 @@ export function SupplierFormDialog({
   )
 }
 
-function SupplierForm({
-  supplier,
-  onSaved,
-  onDone
-}: {
-  supplier?: Supplier
-  onSaved?: (supplier: Supplier) => void
-  onDone: () => void
-}): React.JSX.Element {
-  const { suppliers, addSupplier, updateSupplier } = useData()
-  const [name, setName] = useState(supplier?.name ?? '')
-  const [phone, setPhone] = useState(supplier?.phone ?? '')
-  const [address, setAddress] = useState(supplier?.address ?? '')
-  const [notes, setNotes] = useState(supplier?.notes ?? '')
-  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({})
-
-  const submit = (): void => {
-    const next: { name?: string; phone?: string } = {}
-    const value = name.trim()
-    if (!value) next.name = 'Enter the supplier name.'
-    else if (
-      suppliers.some((s) => s.id !== supplier?.id && s.name.toLowerCase() === value.toLowerCase())
-    )
-      next.name = 'You already have a supplier with this name.'
-    if (phone.trim() && phone.replace(/\D/g, '').length < 10)
-      next.phone = 'Phone number looks too short.'
-    setErrors(next)
-    if (Object.keys(next).length > 0) return
-
-    const values = {
-      name: value,
-      phone: phone.trim(),
-      address: address.trim(),
-      notes: notes.trim()
-    }
-    if (supplier) {
-      updateSupplier(supplier.id, values)
-      toast.success('Supplier updated')
-      onSaved?.({ ...supplier, ...values })
-    } else {
-      const created = addSupplier(values)
-      toast.success(`${created.name} added`)
-      onSaved?.(created)
-    }
-    onDone()
-  }
+function SupplierForm(props: SupplierFormProps): React.JSX.Element {
+  const { supplier, onDone } = props
+  const { form, errors, saving, text, submit } = useSupplierForm(props)
 
   return (
     <>
@@ -98,7 +45,7 @@ function SupplierForm({
 
       <div className="flex flex-col gap-3">
         <FormField label="Name" htmlFor="s-name" error={errors.name}>
-          <Input id="s-name" autoFocus value={name} onChange={(e) => setName(e.target.value)} />
+          <Input id="s-name" autoFocus value={form.name} onChange={text('name')} />
         </FormField>
         <FormField
           label="Phone / WhatsApp number"
@@ -106,13 +53,13 @@ function SupplierForm({
           error={errors.phone}
           hint="e.g. 0300 1234567"
         >
-          <Input id="s-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input id="s-phone" type="tel" value={form.phone} onChange={text('phone')} />
         </FormField>
-        <FormField label="Address" htmlFor="s-address">
-          <Input id="s-address" value={address} onChange={(e) => setAddress(e.target.value)} />
+        <FormField label="Address" htmlFor="s-address" error={errors.address}>
+          <Input id="s-address" value={form.address} onChange={text('address')} />
         </FormField>
-        <FormField label="Notes" htmlFor="s-notes">
-          <Textarea id="s-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <FormField label="Notes" htmlFor="s-notes" error={errors.notes}>
+          <Textarea id="s-notes" value={form.notes} onChange={text('notes')} />
         </FormField>
       </div>
 
@@ -120,7 +67,9 @@ function SupplierForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>{supplier ? 'Save changes' : 'Add supplier'}</Button>
+        <Button onClick={submit} disabled={saving}>
+          {supplier ? 'Save changes' : 'Add supplier'}
+        </Button>
       </DialogFooter>
     </>
   )
