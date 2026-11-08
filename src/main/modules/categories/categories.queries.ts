@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import { categories, products } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -10,17 +10,22 @@ export const listCategories = (db: DbOrTx) =>
   db
     .select()
     .from(categories)
+    .where(isNull(categories.deletedAt))
     .orderBy(sql`rowid`)
     .all()
 
 export const findCategoryById = (db: DbOrTx, id: string) =>
-  db.select().from(categories).where(eq(categories.id, id)).get()
+  db
+    .select()
+    .from(categories)
+    .where(and(eq(categories.id, id), isNull(categories.deletedAt)))
+    .get()
 
 export const findCategoryByName = (db: DbOrTx, name: string) =>
   db
     .select()
     .from(categories)
-    .where(sql`lower(${categories.name}) = lower(${name})`)
+    .where(and(sql`lower(${categories.name}) = lower(${name})`, isNull(categories.deletedAt)))
     .get()
 
 export const insertCategory = (db: DbOrTx, row: typeof categories.$inferInsert) =>
@@ -29,8 +34,8 @@ export const insertCategory = (db: DbOrTx, row: typeof categories.$inferInsert) 
 export const updateCategoryName = (db: DbOrTx, id: string, name: string) =>
   db.update(categories).set({ name }).where(eq(categories.id, id)).returning().get()
 
-export const deleteCategoryRow = (db: DbOrTx, id: string) =>
-  db.delete(categories).where(eq(categories.id, id)).run()
+export const softDeleteCategory = (db: DbOrTx, id: string, deletedAt: string) =>
+  db.update(categories).set({ deletedAt }).where(eq(categories.id, id)).run()
 
 export const countProductsInCategory = (db: DbOrTx, id: string) =>
   db

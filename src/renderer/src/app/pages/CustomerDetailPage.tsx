@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { AngleLeft, Edit, Receipt, TickCircle, Users, Wallet } from 'reicon-react'
-import { Link, useParams } from 'react-router'
+import { AngleLeft, Edit, Receipt, TickCircle, Trash, Users, Wallet } from 'reicon-react'
+import { Link, useNavigate, useParams } from 'react-router'
 
 import { useData } from '@/app/providers/data-context'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
@@ -12,6 +12,7 @@ import { StatCard, toneClasses } from '@/components/shared/stat-card'
 import { WhatsAppButton } from '@/components/shared/whatsapp-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { CustomerDeleteDialog } from '@/features/customers/components/customer-delete-dialog'
 import { CustomerFormDialog } from '@/features/customers/components/customer-form-dialog'
 import { CustomerLedgerTable } from '@/features/customers/components/customer-ledger-table'
 import { buildLedger, buildReminderMessage } from '@/features/customers/utils'
@@ -25,6 +26,8 @@ export function CustomerDetailPage(): React.JSX.Element {
   const { customers, isLoading } = useCustomers()
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const navigate = useNavigate()
 
   const customer = customers.find((item) => item.id === id)
   if (isLoading) return <></>
@@ -86,6 +89,17 @@ export function CustomerDetailPage(): React.JSX.Element {
               <Edit data-icon="inline-start" />
               Edit
             </Button>
+            <Button
+              variant="outline"
+              disabled={owed > 0}
+              title={
+                owed > 0 ? 'This customer still owes you money. Receive payment first.' : undefined
+              }
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash data-icon="inline-start" />
+              Delete
+            </Button>
           </>
         }
       />
@@ -140,6 +154,12 @@ export function CustomerDetailPage(): React.JSX.Element {
         customerId={customer.id}
       />
       <CustomerFormDialog open={editOpen} onOpenChange={setEditOpen} customer={customer} />
+      <CustomerDeleteDialog
+        customer={customer}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onDeleted={() => navigate('/customers')}
+      />
     </>
   )
 }

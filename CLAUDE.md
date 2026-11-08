@@ -42,6 +42,8 @@ One feature goes through these layers, in order:
 - `features/<feature>/api/`: `<feature>.api.ts` only calls `window.api` and returns the raw `{ ok, data } | { ok: false, message }` answer; `<feature>.keys.ts` holds the React Query keys.
 - `features/<feature>/hooks/`: `useX` (read, via `useApiQuery`) and mutation hooks (via `useApiMutation`, which unwraps the answer). A write hook invalidates every key whose data it changed. Form logic (state, validation, submit) lives in a hook too, so components only render.
 
+Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted; a category only when it has no products.
+
 Components never fetch or save directly. Done so far: categories, products and customers. Suppliers, sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
 
 ## Code style

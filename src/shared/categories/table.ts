@@ -7,10 +7,12 @@ export const categories = sqliteTable(
   'categories',
   {
     id: text('id').primaryKey(),
-    name: text('name').notNull()
+    name: text('name').notNull(),
+    deletedAt: text('deleted_at')
   },
   (t) => [
-    // Two categories cannot share a name, even if the capital letters differ.
-    uniqueIndex('categories_name_unique').on(sql`lower(${t.name})`)
+    uniqueIndex('categories_name_unique')
+      .on(sql`lower(${t.name})`)
+      .where(sql`${t.deletedAt} is null`)
   ]
 )

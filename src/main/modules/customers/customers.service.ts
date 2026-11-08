@@ -23,7 +23,7 @@ export function addCustomer(input: AddCustomerInput): Customer {
 export function updateCustomer(input: UpdateCustomerInput): Customer {
   const { id, ...fields } = input
   const db = getDb()
-  if (!q.findCustomerById(db, id)) throw new UserError('This customer no longer exists.')
+  if (!q.findActiveCustomerById(db, id)) throw new UserError('This customer no longer exists.')
   return q.updateCustomerRow(db, id, {
     ...fields,
     ...(fields.name !== undefined && { name: fields.name.trim() }),
@@ -31,4 +31,10 @@ export function updateCustomer(input: UpdateCustomerInput): Customer {
     ...(fields.address !== undefined && { address: fields.address.trim() }),
     ...(fields.notes !== undefined && { notes: fields.notes.trim() })
   })
+}
+
+export function deleteCustomer(id: string): void {
+  const db = getDb()
+  if (!q.findActiveCustomerById(db, id)) throw new UserError('This customer no longer exists.')
+  q.softDeleteCustomer(db, id, new Date().toISOString())
 }

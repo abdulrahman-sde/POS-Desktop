@@ -6,5 +6,6 @@ export const customers = sqliteTable('customers', {
   phone: text('phone').notNull().default(''),
   address: text('address').notNull().default(''),
   notes: text('notes').notNull().default(''),
-  createdAt: text('created_at').notNull()
+  createdAt: text('created_at').notNull(),
+  deletedAt: text('deleted_at')
 })

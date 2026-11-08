@@ -43,7 +43,7 @@ function InvoiceBody({
   onClose: () => void
 }): React.JSX.Element {
   const { orders, payments, invoices, settings } = useData()
-  const { customers } = useCustomers()
+  const { allCustomers: customers } = useCustomers()
   const [paymentOpen, setPaymentOpen] = useState(false)
 
   const order = orders.find((item) => item.id === orderId)

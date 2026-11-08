@@ -12,7 +12,7 @@ export function useBackup(): () => void {
   const { products } = useProducts()
   const { categories } = useCategories()
   const { orders, payments, settings } = useData()
-  const { customers } = useCustomers()
+  const { allCustomers: customers } = useCustomers()
 
   return () => {
     const data = JSON.stringify(

@@ -4,6 +4,7 @@ export type { Customer }
 
 export type CustomersResult = {
   customers: Customer[]
+  allCustomers: Customer[]
   isLoading: boolean
 }
 
@@ -34,4 +35,11 @@ export type CustomerFormProps = {
   customer?: Customer
   onSaved?: (customer: Customer) => void
   onDone: () => void
+}
+
+export type CustomerDeleteDialogProps = {
+  customer: Customer
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onDeleted: () => void
 }

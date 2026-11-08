@@ -10,7 +10,7 @@ import { isSameDay, isSameMonth } from '@/lib/format'
 
 export function useDashboardStats() {
   const { orders } = useData()
-  const { customers } = useCustomers()
+  const { allCustomers: customers } = useCustomers()
   const { products } = useProducts()
   const customerRows = useCustomerRows()
 

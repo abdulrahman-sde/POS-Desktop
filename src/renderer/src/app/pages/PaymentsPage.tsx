@@ -14,7 +14,7 @@ import { formatCurrency, isSameDay, isSameMonth } from '@/lib/format'
 
 export function PaymentsPage(): React.JSX.Element {
   const { orders, payments } = useData()
-  const { customers } = useCustomers()
+  const { allCustomers: customers } = useCustomers()
   const rows = useCustomerRows()
   const [open, setOpen] = useState(false)
 

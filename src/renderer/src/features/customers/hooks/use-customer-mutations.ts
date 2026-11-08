@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { useApiMutation } from '@/lib/use-api'
 import { customersApi } from '../api/customers.api'
 import { customerKeys } from '../api/customers.keys'
+import type { Customer } from '../types'
 
 export function useAddCustomer() {
   const queryClient = useQueryClient()
@@ -21,6 +22,16 @@ export function useUpdateCustomer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: customerKeys.all })
       toast.success('Customer updated')
+    }
+  })
+}
+
+export function useDeleteCustomer() {
+  const queryClient = useQueryClient()
+  return useApiMutation((customer: Customer) => customersApi.remove(customer.id), {
+    onSuccess: (_data, customer) => {
+      queryClient.invalidateQueries({ queryKey: customerKeys.all })
+      toast.success(`${customer.name} deleted`)
     }
   })
 }

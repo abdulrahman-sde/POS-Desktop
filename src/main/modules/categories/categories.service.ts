@@ -38,5 +38,5 @@ export function deleteCategory(id: string): void {
       `This category has ${count} product${count === 1 ? '' : 's'}. Move or remove them first.`
     )
   }
-  q.deleteCategoryRow(db, id)
+  q.softDeleteCategory(db, id, new Date().toISOString())
 }

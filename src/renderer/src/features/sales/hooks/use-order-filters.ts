@@ -19,7 +19,7 @@ export type OrderRow = {
 // Order history rows with search and payment-status filter.
 export function useOrderFilters() {
   const { orders, invoices } = useData()
-  const { customers } = useCustomers()
+  const { allCustomers: customers } = useCustomers()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<OrderFilter>('all')
 
