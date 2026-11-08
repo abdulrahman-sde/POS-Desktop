@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 
-import { useData } from '@/app/providers/data-context'
+import { usePurchases } from '@/features/purchases/hooks/use-purchases'
+import { useSupplierPayments } from '@/features/purchases/hooks/use-supplier-payments'
 import { purchaseSubtotal, supplierOwed } from '@/features/purchases/utils'
 import type { SupplierRow } from '../types'
 import { useSuppliers } from './use-suppliers'
 
 export function useSupplierRows(): SupplierRow[] {
   const { suppliers } = useSuppliers()
-  const { purchases, supplierPayments } = useData()
+  const { purchases } = usePurchases()
+  const { supplierPayments } = useSupplierPayments()
 
   return useMemo(
     () =>

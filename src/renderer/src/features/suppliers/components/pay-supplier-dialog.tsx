@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
-
-import { useData } from '@/app/providers/data-context'
 import { FormField } from '@/components/shared/form-field'
 import { OptionSelect } from '@/components/shared/option-select'
 import { Button } from '@/components/ui/button'
@@ -15,19 +11,14 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { paymentMethodLabels, type PaymentMethod } from '@/features/sales/types'
-import { formatCurrency, toNumber } from '@/lib/format'
-import type { Supplier } from '../types'
+import { formatCurrency } from '@/lib/format'
+import { usePaySupplierForm } from '../hooks/use-pay-supplier-form'
+import type { PaySupplierDialogProps, PaySupplierFormProps } from '../types'
 
 const methodOptions = (Object.keys(paymentMethodLabels) as PaymentMethod[]).map((value) => ({
   value,
   label: paymentMethodLabels[value]
 }))
-
-type PaySupplierDialogProps = {
-  supplier: Supplier | null // the dialog is open while this is set
-  owed: number
-  onOpenChange: (open: boolean) => void
-}
 
 export function PaySupplierDialog({
   supplier,
@@ -45,27 +36,9 @@ export function PaySupplierDialog({
   )
 }
 
-function PayForm({
-  supplier,
-  owed,
-  onDone
-}: {
-  supplier: Supplier
-  owed: number
-  onDone: () => void
-}): React.JSX.Element {
-  const { paySupplier } = useData()
-  const [amount, setAmount] = useState('')
-  const [method, setMethod] = useState<PaymentMethod>('cash')
-  const [error, setError] = useState('')
-
-  const submit = (): void => {
-    const value = toNumber(amount)
-    if (value <= 0) return setError('Enter how much you paid.')
-    paySupplier({ supplierId: supplier.id, amount: value, method, note: '' })
-    toast.success(`${formatCurrency(value)} paid to ${supplier.name}`)
-    onDone()
-  }
+function PayForm(props: PaySupplierFormProps): React.JSX.Element {
+  const { supplier, owed, onDone } = props
+  const { form, error, saving, setAmount, setMethod, submit } = usePaySupplierForm(props)
 
   return (
     <>
@@ -82,20 +55,17 @@ function PayForm({
           id="sp-amount"
           autoFocus
           type="number"
-          inputMode="decimal"
+          inputMode="numeric"
           min={0}
-          value={amount}
-          onChange={(event) => {
-            setAmount(event.target.value)
-            setError('')
-          }}
+          value={form.amount}
+          onChange={(event) => setAmount(event.target.value)}
           onKeyDown={(event) => event.key === 'Enter' && submit()}
         />
       </FormField>
       <FormField label="How did you pay?" htmlFor="sp-method">
         <OptionSelect
           id="sp-method"
-          value={method}
+          value={form.method}
           onValueChange={(v) => setMethod(v as PaymentMethod)}
           options={methodOptions}
         />
@@ -104,7 +74,9 @@ function PayForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>Save payment</Button>
+        <Button onClick={submit} disabled={saving}>
+          Save payment
+        </Button>
       </DialogFooter>
     </>
   )

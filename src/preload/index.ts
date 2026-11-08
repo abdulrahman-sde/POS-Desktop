@@ -5,6 +5,7 @@ import { categoriesPreload } from './modules/categories'
 import { customersPreload } from './modules/customers'
 import { paymentsPreload } from './modules/payments'
 import { productsPreload } from './modules/products'
+import { purchasesPreload } from './modules/purchases'
 import { salesPreload } from './modules/sales'
 import { suppliersPreload } from './modules/suppliers'
 
@@ -16,6 +17,7 @@ export const api = {
   customers: customersPreload,
   payments: paymentsPreload,
   products: productsPreload,
+  purchases: purchasesPreload,
   sales: salesPreload,
   suppliers: suppliersPreload
 }

@@ -43,6 +43,13 @@
       "when": 1794165826170,
       "tag": "0005_create_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794166088142,
+      "tag": "0006_create_purchases",
+      "breakpoints": true
     }
   ]
 }

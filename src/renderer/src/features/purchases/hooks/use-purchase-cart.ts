@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 
-import { useData, type NewPurchaseInput } from '@/app/providers/data-context'
+import type { NewPurchaseInput } from '@shared/purchases/types'
 import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers'
 import { useProducts } from '@/features/products/hooks/use-products'
-import { PRODUCT_UNIT, type Product } from '@/features/products/types'
+import type { Product } from '@/features/products/types'
 import type { PaymentMethod } from '@/features/sales/types'
 import { toNumber } from '@/lib/format'
 import type { PurchaseItem } from '../types'
 import { purchaseSubtotal, supplierOwed } from '../utils'
+import { usePurchases } from './use-purchases'
+import { useSupplierPayments } from './use-supplier-payments'
 
 // cost is the price of ONE piece on this bill. It starts at the product's current cost price.
 type Line = { productId: string; qty: number; costPrice: number }
@@ -16,7 +18,8 @@ type Line = { productId: string; qty: number; costPrice: number }
 export function usePurchaseCart() {
   const { products } = useProducts()
   const { suppliers } = useSuppliers()
-  const { purchases, supplierPayments } = useData()
+  const { purchases } = usePurchases()
+  const { supplierPayments } = useSupplierPayments()
   const [lines, setLines] = useState<Line[]>([])
   const [pickedSupplierId, setSupplierId] = useState('')
   const supplierId = pickedSupplierId || suppliers[0]?.id || ''
@@ -33,7 +36,6 @@ export function usePurchaseCart() {
               {
                 productId: product.id,
                 name: product.name,
-                unit: PRODUCT_UNIT,
                 qty: line.qty,
                 costPrice: line.costPrice
               }
@@ -106,7 +108,13 @@ export function usePurchaseCart() {
           ? 'The total must be more than zero.'
           : ''
 
-  const buildPurchase = (): NewPurchaseInput => ({ supplierId, items, paid, method, note: '' })
+  const buildPurchase = (): NewPurchaseInput => ({
+    supplierId,
+    items: items.map(({ productId, qty, costPrice }) => ({ productId, qty, costPrice })),
+    paid,
+    method,
+    note: ''
+  })
 
   return {
     items,

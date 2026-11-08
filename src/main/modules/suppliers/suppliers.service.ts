@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto'
 import type { AddSupplierInput, Supplier, UpdateSupplierInput } from '@shared/suppliers/types'
 import { getDb } from '../../db/connection'
 import { UserError } from '../../lib/ipc'
+import { owedToSupplier } from '../purchases/purchases.queries'
 import * as q from './suppliers.queries'
 
 export function listSuppliers(): Supplier[] {
@@ -44,5 +45,11 @@ export function updateSupplier(input: UpdateSupplierInput): Supplier {
 export function deleteSupplier(id: string): void {
   const db = getDb()
   if (!q.findActiveSupplierById(db, id)) throw new UserError('This supplier no longer exists.')
+  const owed = owedToSupplier(db, id)
+  if (owed > 0) {
+    throw new UserError(
+      `You still owe this supplier Rs ${new Intl.NumberFormat('en-PK').format(owed)}. Pay them first.`
+    )
+  }
   q.softDeleteSupplier(db, id, new Date().toISOString())
 }

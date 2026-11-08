@@ -1,12 +1,12 @@
 import { toast } from 'sonner'
 
 import { usePurchaseDraft } from '@/app/providers/purchase-draft-context'
-import { useData } from '@/app/providers/data-context'
 import { ImportInvoiceButton } from '@/features/purchases/import/components/import-invoice-button'
 import { PageHeader } from '@/components/shared/page-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { useCreatePurchase } from '@/features/purchases/hooks/use-purchase-mutations'
 import { PurchaseCheckout } from '@/features/purchases/components/purchase-checkout'
 import { PurchaseLines } from '@/features/purchases/components/purchase-lines'
 import { PurchaseProductSearch } from '@/features/purchases/components/purchase-product-search'
@@ -14,16 +14,21 @@ import { plural } from '@/lib/format'
 
 export function BuyStockPage(): React.JSX.Element {
   const { cart } = usePurchaseDraft()
-  const { createPurchase } = useData()
+  const createPurchase = useCreatePurchase()
 
-  const submit = (): void => {
+  const submit = async (): Promise<void> => {
+    if (createPurchase.isPending) return
     if (cart.problem) {
       toast.error(cart.problem)
       return
     }
-    const purchase = createPurchase(cart.buildPurchase())
-    cart.reset()
-    toast.success(`${purchase.billNo} saved. Your stock is updated.`)
+    try {
+      const purchase = await createPurchase.mutateAsync(cart.buildPurchase())
+      cart.reset()
+      toast.success(`${purchase.billNo} saved. Your stock is updated.`)
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
   }
 
   return (

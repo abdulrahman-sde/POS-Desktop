@@ -1,4 +1,5 @@
 import type { Supplier } from '@shared/suppliers/types'
+import type { PaymentMethod } from '@/features/sales/types'
 
 export type { Supplier }
 
@@ -41,4 +42,21 @@ export type SupplierDeleteDialogProps = {
   supplier: Supplier
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+export type PaySupplierFormFields = {
+  amount: string
+  method: PaymentMethod
+}
+
+export type PaySupplierDialogProps = {
+  supplier: Supplier | null
+  owed: number
+  onOpenChange: (open: boolean) => void
+}
+
+export type PaySupplierFormProps = {
+  supplier: Supplier
+  owed: number
+  onDone: () => void
 }
