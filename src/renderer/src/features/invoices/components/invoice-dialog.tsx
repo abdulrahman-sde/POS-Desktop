@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Printer, Wallet } from 'reicon-react'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { InvoiceStatusBadge } from '@/components/shared/invoice-status-badge'
 import { RecordPaymentDialog } from '@/components/shared/record-payment-dialog'
 import { WhatsAppButton } from '@/components/shared/whatsapp-button'
@@ -41,7 +42,8 @@ function InvoiceBody({
   orderId: string
   onClose: () => void
 }): React.JSX.Element {
-  const { orders, customers, payments, invoices, settings } = useData()
+  const { orders, payments, invoices, settings } = useData()
+  const { customers } = useCustomers()
   const [paymentOpen, setPaymentOpen] = useState(false)
 
   const order = orders.find((item) => item.id === orderId)

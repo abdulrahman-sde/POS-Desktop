@@ -2,18 +2,12 @@ import { useMemo } from 'react'
 
 import { useData } from '@/app/providers/data-context'
 import { customerBalance } from '@/features/sales/utils'
-import type { Customer } from '../types'
+import type { CustomerRow } from '../types'
+import { useCustomers } from './use-customers'
 
-export type CustomerRow = {
-  customer: Customer
-  balance: number
-  orderCount: number
-  lastOrderAt: string | null
-}
-
-// Each customer together with what they owe and when they last bought.
 export function useCustomerRows(): CustomerRow[] {
-  const { customers, orders, payments } = useData()
+  const { customers } = useCustomers()
+  const { orders, payments } = useData()
 
   return useMemo(
     () =>

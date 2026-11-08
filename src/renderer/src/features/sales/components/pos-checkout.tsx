@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Add } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
 import { FormField } from '@/components/shared/form-field'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { OptionSelect } from '@/components/shared/option-select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,7 +40,7 @@ function SummaryRow({
 }
 
 export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Element {
-  const { customers } = useData()
+  const { customers } = useCustomers()
   const [newCustomerOpen, setNewCustomerOpen] = useState(false)
 
   return (

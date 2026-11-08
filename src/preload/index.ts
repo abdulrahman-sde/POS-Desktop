@@ -2,6 +2,7 @@ import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 import { categoriesPreload } from './modules/categories'
+import { customersPreload } from './modules/customers'
 import { productsPreload } from './modules/products'
 
 // Everything the screen may ask the backend to do. Add a line here when you add a module.
@@ -9,6 +10,7 @@ import { productsPreload } from './modules/products'
 // cannot be reached from the screen.
 export const api = {
   categories: categoriesPreload,
+  customers: customersPreload,
   products: productsPreload
 }
 

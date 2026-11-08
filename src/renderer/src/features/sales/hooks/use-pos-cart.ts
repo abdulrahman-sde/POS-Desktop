@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useData, type NewOrderInput } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import { toNumber } from '@/lib/format'
@@ -16,7 +17,8 @@ type CartLine = { productId: string; qty: number; unitPrice: number }
 // All the state and rules of the sale screen: cart lines, customer, discount, advance.
 export function usePosCart() {
   const { products } = useProducts()
-  const { customers, orders, payments } = useData()
+  const { orders, payments } = useData()
+  const { customers } = useCustomers()
   const [lines, setLines] = useState<CartLine[]>([])
   const [customerId, setCustomerId] = useState(WALK_IN)
   const [discountInput, setDiscountInput] = useState('')

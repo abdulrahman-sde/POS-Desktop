@@ -3,6 +3,7 @@ import { AngleLeft, Edit, Receipt, TickCircle, Users, Wallet } from 'reicon-reac
 import { Link, useParams } from 'react-router'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { BalanceAmount } from '@/components/shared/balance-amount'
 import { EmptyState } from '@/components/shared/empty-state'
 import { PageHeader } from '@/components/shared/page-header'
@@ -20,11 +21,13 @@ import { cn } from '@/lib/utils'
 
 export function CustomerDetailPage(): React.JSX.Element {
   const { id } = useParams()
-  const { customers, orders, payments, invoices, settings } = useData()
+  const { orders, payments, invoices, settings } = useData()
+  const { customers, isLoading } = useCustomers()
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
   const customer = customers.find((item) => item.id === id)
+  if (isLoading) return <></>
   if (!customer) {
     return (
       <EmptyState

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -51,7 +52,8 @@ function PaymentForm({
   customerId?: string
   onDone: () => void
 }): React.JSX.Element {
-  const { customers, orders, payments, recordPayment } = useData()
+  const { orders, payments, recordPayment } = useData()
+  const { customers } = useCustomers()
   const [selected, setSelected] = useState(customerId ?? '')
   const [amount, setAmount] = useState('')
   const [method, setMethod] = useState<PaymentMethod>('cash')

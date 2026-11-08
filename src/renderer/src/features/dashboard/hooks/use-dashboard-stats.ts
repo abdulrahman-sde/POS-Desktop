@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useCustomerRows } from '@/features/customers/hooks/use-customer-rows'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { getStockLevel } from '@/features/products/types'
@@ -8,7 +9,8 @@ import { orderTotal } from '@/features/sales/utils'
 import { isSameDay, isSameMonth } from '@/lib/format'
 
 export function useDashboardStats() {
-  const { orders, customers } = useData()
+  const { orders } = useData()
+  const { customers } = useCustomers()
   const { products } = useProducts()
   const customerRows = useCustomerRows()
 

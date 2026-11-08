@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
-
-import { useData } from '@/app/providers/data-context'
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,14 +10,8 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import type { Customer } from '../types'
-
-type CustomerFormDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  customer?: Customer // when set, we are editing
-  onSaved?: (customer: Customer) => void
-}
+import { useCustomerForm } from '../hooks/use-customer-form'
+import type { CustomerFormDialogProps, CustomerFormProps } from '../types'
 
 export function CustomerFormDialog({
   open,
@@ -40,46 +30,9 @@ export function CustomerFormDialog({
   )
 }
 
-function CustomerForm({
-  customer,
-  onSaved,
-  onDone
-}: {
-  customer?: Customer
-  onSaved?: (customer: Customer) => void
-  onDone: () => void
-}): React.JSX.Element {
-  const { addCustomer, updateCustomer } = useData()
-  const [name, setName] = useState(customer?.name ?? '')
-  const [phone, setPhone] = useState(customer?.phone ?? '')
-  const [address, setAddress] = useState(customer?.address ?? '')
-  const [notes, setNotes] = useState(customer?.notes ?? '')
-  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({})
-
-  const submit = (): void => {
-    const next: { name?: string; phone?: string } = {}
-    if (!name.trim()) next.name = 'Enter the customer name.'
-    if (phone.trim() && phone.replace(/\D/g, '').length < 10)
-      next.phone = 'Phone number looks too short.'
-    setErrors(next)
-    if (Object.keys(next).length > 0) return
-
-    const values = {
-      name: name.trim(),
-      phone: phone.trim(),
-      address: address.trim(),
-      notes: notes.trim()
-    }
-    if (customer) {
-      updateCustomer(customer.id, values)
-      toast.success('Customer updated')
-    } else {
-      const created = addCustomer(values)
-      toast.success(`${created.name} added`)
-      onSaved?.(created)
-    }
-    onDone()
-  }
+function CustomerForm(props: CustomerFormProps): React.JSX.Element {
+  const { customer, onDone } = props
+  const { form, errors, saving, text, submit } = useCustomerForm(props)
 
   return (
     <>
@@ -92,7 +45,7 @@ function CustomerForm({
 
       <div className="flex flex-col gap-3">
         <FormField label="Name" htmlFor="c-name" error={errors.name}>
-          <Input id="c-name" autoFocus value={name} onChange={(e) => setName(e.target.value)} />
+          <Input id="c-name" autoFocus value={form.name} onChange={text('name')} />
         </FormField>
         <FormField
           label="Phone / WhatsApp number"
@@ -100,13 +53,13 @@ function CustomerForm({
           error={errors.phone}
           hint="e.g. 0300 1234567"
         >
-          <Input id="c-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input id="c-phone" type="tel" value={form.phone} onChange={text('phone')} />
         </FormField>
-        <FormField label="Address" htmlFor="c-address">
-          <Input id="c-address" value={address} onChange={(e) => setAddress(e.target.value)} />
+        <FormField label="Address" htmlFor="c-address" error={errors.address}>
+          <Input id="c-address" value={form.address} onChange={text('address')} />
         </FormField>
-        <FormField label="Notes" htmlFor="c-notes">
-          <Textarea id="c-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <FormField label="Notes" htmlFor="c-notes" error={errors.notes}>
+          <Textarea id="c-notes" value={form.notes} onChange={text('notes')} />
         </FormField>
       </div>
 
@@ -114,7 +67,9 @@ function CustomerForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>{customer ? 'Save changes' : 'Add customer'}</Button>
+        <Button onClick={submit} disabled={saving}>
+          {customer ? 'Save changes' : 'Add customer'}
+        </Button>
       </DialogFooter>
     </>
   )

@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import { summarizeInvoices } from '@/features/sales/utils'
 import { defaultSettings } from '@/features/settings/types'
 import { newId } from '@/lib/format'
-import type { Customer } from '@/features/customers/types'
 import type { Payment } from '@/features/payments/types'
 import type { Purchase, SupplierPayment } from '@/features/purchases/types'
 import type { Order } from '@/features/sales/types'
@@ -14,7 +13,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [supplierPayments, setSupplierPayments] = useState<SupplierPayment[]>([])
-  const [customers, setCustomers] = useState<Customer[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
   const [settings, setSettings] = useState(defaultSettings)
@@ -25,7 +23,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
     suppliers,
     purchases,
     supplierPayments,
-    customers,
     orders,
     payments,
     settings,
@@ -57,14 +54,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
       setSupplierPayments((prev) => [payment, ...prev])
       return payment
     },
-
-    addCustomer: (input) => {
-      const customer = { ...input, id: newId('c'), createdAt: new Date().toISOString() }
-      setCustomers((prev) => [customer, ...prev])
-      return customer
-    },
-    updateCustomer: (id, patch) =>
-      setCustomers((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c))),
 
     createOrder: (input) => {
       const number = 1001 + orders.length

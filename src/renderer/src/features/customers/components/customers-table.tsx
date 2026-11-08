@@ -13,7 +13,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { formatDate } from '@/lib/format'
-import type { CustomerRow } from '../hooks/use-customer-rows'
+import type { CustomerRow } from '../types'
 
 export function CustomersTable({ rows }: { rows: CustomerRow[] }): React.JSX.Element {
   const navigate = useNavigate()

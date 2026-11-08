@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react'
 
-import type { Customer } from '@/features/customers/types'
 import type { Payment } from '@/features/payments/types'
 import type { Purchase, PurchaseItem, SupplierPayment } from '@/features/purchases/types'
 import type { InvoiceSummary, Order, OrderItem, PaymentMethod } from '@/features/sales/types'
@@ -35,7 +34,6 @@ export type DataContextValue = {
   suppliers: Supplier[]
   purchases: Purchase[]
   supplierPayments: SupplierPayment[]
-  customers: Customer[]
   orders: Order[]
   payments: Payment[]
   settings: ShopSettings
@@ -45,8 +43,6 @@ export type DataContextValue = {
   deleteSupplier: (id: string) => void
   createPurchase: (input: NewPurchaseInput) => Purchase
   paySupplier: (input: NewSupplierPaymentInput) => SupplierPayment
-  addCustomer: (input: Omit<Customer, 'id' | 'createdAt'>) => Customer
-  updateCustomer: (id: string, patch: Partial<Omit<Customer, 'id' | 'createdAt'>>) => void
   createOrder: (input: NewOrderInput) => Order
   recordPayment: (input: NewPaymentInput) => Payment
   updateSettings: (patch: Partial<ShopSettings>) => void

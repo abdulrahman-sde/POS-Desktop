@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import type { Order } from '../types'
 import { orderTotal } from '../utils'
 
@@ -17,7 +18,8 @@ export type OrderRow = {
 
 // Order history rows with search and payment-status filter.
 export function useOrderFilters() {
-  const { orders, customers, invoices } = useData()
+  const { orders, invoices } = useData()
+  const { customers } = useCustomers()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<OrderFilter>('all')
 

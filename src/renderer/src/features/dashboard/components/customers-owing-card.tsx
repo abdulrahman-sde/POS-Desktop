@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { BalanceAmount } from '@/components/shared/balance-amount'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { CustomerRow } from '@/features/customers/hooks/use-customer-rows'
+import type { CustomerRow } from '@/features/customers/types'
 
 export function CustomersOwingCard({ rows }: { rows: CustomerRow[] }): React.JSX.Element {
   return (

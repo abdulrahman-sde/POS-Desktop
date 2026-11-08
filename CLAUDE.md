@@ -42,7 +42,7 @@ One feature goes through these layers, in order:
 - `features/<feature>/api/`: `<feature>.api.ts` only calls `window.api` and returns the raw `{ ok, data } | { ok: false, message }` answer; `<feature>.keys.ts` holds the React Query keys.
 - `features/<feature>/hooks/`: `useX` (read, via `useApiQuery`) and mutation hooks (via `useApiMutation`, which unwraps the answer). A write hook invalidates every key whose data it changed. Form logic (state, validation, submit) lives in a hook too, so components only render.
 
-Components never fetch or save directly. Done so far: categories and products. Customers, suppliers, sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
+Components never fetch or save directly. Done so far: categories, products and customers. Suppliers, sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
 
 ## Code style
 

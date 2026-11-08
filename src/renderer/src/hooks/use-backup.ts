@@ -1,6 +1,7 @@
 import { toast } from 'sonner'
 
 import { useData } from '@/app/providers/data-context'
+import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useCategories } from '@/features/categories/hooks/use-categories'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { toDateInput } from '@/lib/format'
@@ -10,7 +11,8 @@ import { toDateInput } from '@/lib/format'
 export function useBackup(): () => void {
   const { products } = useProducts()
   const { categories } = useCategories()
-  const { customers, orders, payments, settings } = useData()
+  const { orders, payments, settings } = useData()
+  const { customers } = useCustomers()
 
   return () => {
     const data = JSON.stringify(
