@@ -3,7 +3,12 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+/* Light theme only: the dark: classes inside shadcn components must never follow the computer's dark mode. */
+@custom-variant dark (&:is(.dark *));
+
 :root {
+  /* Narrowest a New Sale product tile may get. The grid fits as many columns as it can without going below this. */
+  --tile-min: 13rem;
   --background: oklch(1.0000 0 0);
   --foreground: oklch(0.2095 0.0019 286.2304);
   --card: oklch(0.9610 0.0029 264.5419);
@@ -20,6 +25,12 @@
   --accent-foreground: oklch(0.2095 0.0019 286.2304);
   --destructive: oklch(0.6290 0.1902 23.0704);
   --destructive-foreground: oklch(1.0000 0 0);
+  --success: oklch(0.5600 0.1400 155);
+  --success-foreground: oklch(1.0000 0 0);
+  --warning: oklch(0.6000 0.1400 65);
+  --warning-foreground: oklch(1.0000 0 0);
+  --info: oklch(0.5600 0.1300 225);
+  --info-foreground: oklch(1.0000 0 0);
   --border: oklch(0.9610 0.0029 264.5419);
   --input: oklch(0.8946 0.0042 271.3653);
   --ring: oklch(0.5334 0.2049 258.8101);
@@ -28,6 +39,16 @@
   --chart-3: oklch(0.6212 0.1283 163.1147);
   --chart-4: oklch(0.6402 0.1361 73.3684);
   --chart-5: oklch(0.6224 0.1712 0.8378);
+  /* Category chip colours. Hues stay in the blue / cyan / violet / pink range, so none looks like
+     success (green), warning (amber) or destructive (red). The chip tints the background with the colour. */
+  --category-1: oklch(0.5000 0.1600 275);
+  --category-2: oklch(0.5000 0.1500 305);
+  --category-3: oklch(0.5000 0.1500 205);
+  --category-4: oklch(0.5200 0.1500 335);
+  --category-5: oklch(0.4800 0.0400 255);
+  --category-6: oklch(0.5000 0.1400 240);
+  --category-7: oklch(0.5000 0.1600 290);
+  --category-8: oklch(0.5000 0.1400 320);
   --sidebar: oklch(0.9610 0.0029 264.5419);
   --sidebar-foreground: oklch(0.2095 0.0019 286.2304);
   --sidebar-primary: oklch(0.5334 0.2049 258.8101);
@@ -58,7 +79,23 @@
   --spacing: 0.25rem;
 }
 
+/* One line of the import list (heading line and every item): item number, name, quantity, cost price, total, match, bin.
+   The columns share extra width in proportion, so nothing is stretched while the others are squeezed, and the gaps stay equal. */
+@utility import-row {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(7rem, 3fr) minmax(3.25rem, 1fr) minmax(4.5rem, 1.3fr) minmax(4.75rem, 1.3fr) minmax(8.5rem, 1.8fr) 1.25rem;
+  column-gap: 0.5rem;
+}
+
+/* A grid of product tiles: as many columns as fit, each at least --tile-min wide. */
+@utility product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
+}
+
 @theme inline {
+  /* How wide the import list must be to show one line per item. Narrower than this, each item becomes a two-line card. */
+  --container-row: 38rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -75,6 +112,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -83,6 +126,14 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-category-1: var(--category-1);
+  --color-category-2: var(--category-2);
+  --color-category-3: var(--category-3);
+  --color-category-4: var(--category-4);
+  --color-category-5: var(--category-5);
+  --color-category-6: var(--category-6);
+  --color-category-7: var(--category-7);
+  --color-category-8: var(--category-8);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -120,5 +171,21 @@
   }
   html {
     @apply font-sans;
+  }
+  /* Number boxes: hide the browser's tiny up/down arrows. They cover the digits in small fields. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+/* Printing: hide everything in <body> except the invoice copy that InvoicePrint adds. */
+@media print {
+  body > :not([data-print-invoice]) {
+    display: none !important;
   }
 }

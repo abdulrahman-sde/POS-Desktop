@@ -1,5 +1,90 @@
-import { PageHeader } from '@/components/layout/page-header'
+import { useMemo, useState } from 'react'
+import { Add, Cart, Shop, Wallet } from 'reicon-react'
+import { Link } from 'react-router'
+
+import { PageHeader } from '@/components/shared/page-header'
+import { SearchField } from '@/components/shared/search-field'
+import { StatCard } from '@/components/shared/stat-card'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PurchasesTable } from '@/features/purchases/components/purchases-table'
+import { SupplierFormDialog } from '@/features/suppliers/components/supplier-form-dialog'
+import { SuppliersTable } from '@/features/suppliers/components/suppliers-table'
+import { useSupplierRows } from '@/features/suppliers/hooks/use-supplier-rows'
+import { formatCurrency } from '@/lib/format'
 
 export function SuppliersPage(): React.JSX.Element {
-  return <PageHeader title="Suppliers" description="People and companies you buy from." />
+  const rows = useSupplierRows()
+  const [tab, setTab] = useState('suppliers')
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const visible = useMemo(() => {
+    const text = query.trim().toLowerCase()
+    return rows.filter(
+      (row) =>
+        !text || row.supplier.name.toLowerCase().includes(text) || row.supplier.phone.includes(text)
+    )
+  }, [rows, query])
+
+  const totalBought = rows.reduce((sum, row) => sum + row.totalBought, 0)
+  const totalOwed = rows.reduce((sum, row) => sum + Math.max(0, row.owed), 0)
+
+  return (
+    <>
+      <PageHeader
+        title="Suppliers"
+        description="Who you buy from, and what you still have to pay them."
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setOpen(true)}>
+              <Add data-icon="inline-start" />
+              Add supplier
+            </Button>
+            <Button nativeButton={false} render={<Link to="/stock/new" />}>
+              <Cart data-icon="inline-start" />
+              Buy stock
+            </Button>
+          </>
+        }
+      />
+
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatCard label="Suppliers" icon={Shop} tone="primary" value={String(rows.length)} />
+        <StatCard
+          label="Total bought"
+          icon={Cart}
+          tone="info"
+          value={formatCurrency(totalBought)}
+        />
+        <StatCard
+          label="You owe"
+          icon={Wallet}
+          tone="destructive"
+          value={formatCurrency(totalOwed)}
+        />
+      </div>
+
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList>
+            <TabsTrigger value="suppliers">Suppliers</TabsTrigger>
+            <TabsTrigger value="bills">Stock bills</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        {tab === 'suppliers' ? (
+          <SearchField
+            className="sm:max-w-xs sm:flex-1"
+            placeholder="Search suppliers"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        ) : null}
+      </div>
+
+      {tab === 'suppliers' ? <SuppliersTable rows={visible} /> : <PurchasesTable />}
+
+      <SupplierFormDialog open={open} onOpenChange={setOpen} />
+    </>
+  )
 }

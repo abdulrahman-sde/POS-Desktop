@@ -1,0 +1,146 @@
+import { useState } from 'react'
+import { Category as CategoryIcon, Edit, Trash } from 'reicon-react'
+import { Link } from 'react-router'
+import { toast } from 'sonner'
+
+import { useData } from '@/app/providers/data-context'
+import { EmptyState } from '@/components/shared/empty-state'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { formatCurrency, plural } from '@/lib/format'
+import type { CategoryRow } from '../hooks/use-category-rows'
+import type { Category } from '../types'
+import { CategoryFormDialog } from './category-form-dialog'
+
+export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.Element {
+  const { deleteCategory } = useData()
+  const [editing, setEditing] = useState<Category | undefined>()
+  const [deleting, setDeleting] = useState<Category | null>(null)
+
+  return (
+    <Card className="gap-0 px-3 py-1">
+      {rows.length === 0 ? (
+        <EmptyState
+          icon={CategoryIcon}
+          title="No categories found"
+          description="Add a category to group your products."
+        />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Category</TableHead>
+              <TableHead>Products</TableHead>
+              <TableHead className="hidden sm:table-cell text-right">Value of stock</TableHead>
+              <TableHead className="w-0" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map(({ category, productCount, stockValue }) => (
+              <TableRow key={category.id}>
+                <TableCell>{category.name}</TableCell>
+                <TableCell>
+                  <Badge variant={productCount > 0 ? 'info' : 'secondary'}>
+                    {plural(productCount, 'product')}
+                  </Badge>
+                </TableCell>
+                <TableCell className="hidden sm:table-cell text-right text-muted-foreground">
+                  {formatCurrency(stockValue)}
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-1">
+                    {productCount > 0 ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        nativeButton={false}
+                        render={
+                          <Link to={`/products?category=${encodeURIComponent(category.name)}`} />
+                        }
+                      >
+                        View products
+                      </Button>
+                    ) : null}
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Rename ${category.name}`}
+                      onClick={() => setEditing(category)}
+                    >
+                      <Edit />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Delete ${category.name}`}
+                      disabled={productCount > 0}
+                      title={
+                        productCount > 0
+                          ? 'Move its products to another category first'
+                          : 'Delete this category'
+                      }
+                      onClick={() => setDeleting(category)}
+                    >
+                      <Trash />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+
+      <CategoryFormDialog
+        open={editing !== undefined}
+        onOpenChange={(open) => !open && setEditing(undefined)}
+        category={editing}
+      />
+
+      <Dialog open={deleting !== null} onOpenChange={(open) => !open && setDeleting(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete {deleting?.name}?</DialogTitle>
+            <DialogDescription>
+              This category has no products, so nothing else will change.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleting(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (deleting) {
+                  deleteCategory(deleting.id)
+                  toast.success(`${deleting.name} deleted`)
+                }
+                setDeleting(null)
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  )
+}

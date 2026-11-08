@@ -13,7 +13,7 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { Logo } from './logo'
-import { navGroups, settingsItem, type NavItem } from './nav-config'
+import { isNavActive, navGroups, settingsItem, type NavItem } from './nav-config'
 
 function NavButton({ item }: { item: NavItem }): React.JSX.Element {
   const { pathname } = useLocation()
@@ -23,7 +23,7 @@ function NavButton({ item }: { item: NavItem }): React.JSX.Element {
       <SidebarMenuButton
         className="h-9"
         tooltip={item.label}
-        isActive={pathname === item.path}
+        isActive={isNavActive(item.path, pathname)}
         render={<NavLink to={item.path} />}
       >
         <item.icon />
@@ -48,7 +48,9 @@ export function AppSidebar(): React.JSX.Element {
       <SidebarContent className="px-1">
         {navGroups.map((group) => (
           <SidebarGroup key={group.label} className="py-1">
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+              {group.label}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (

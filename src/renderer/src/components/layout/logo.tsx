@@ -36,7 +36,15 @@ export function Logo({ className }: LogoProps): React.JSX.Element {
             />
           </g>
         </g>
-        <rect x="1" y="1" width="46" height="46" rx="11" stroke="url(#logo_border)" strokeWidth="2" />
+        <rect
+          x="1"
+          y="1"
+          width="46"
+          height="46"
+          rx="11"
+          stroke="url(#logo_border)"
+          strokeWidth="2"
+        />
       </g>
       <defs>
         <filter
@@ -111,15 +119,36 @@ export function Logo({ className }: LogoProps): React.JSX.Element {
           <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
           <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
         </filter>
-        <linearGradient id="logo_sheen" x1="24" y1="0" x2="26" y2="48" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="logo_sheen"
+          x1="24"
+          y1="0"
+          x2="26"
+          y2="48"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="currentColor" stopOpacity="0" />
           <stop offset="1" stopColor="currentColor" stopOpacity="0.12" />
         </linearGradient>
-        <linearGradient id="logo_shape" x1="24" y1="9.71429" x2="24" y2="38.2857" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="logo_shape"
+          x1="24"
+          y1="9.71429"
+          x2="24"
+          y2="38.2857"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="currentColor" stopOpacity="0.8" />
           <stop offset="1" stopColor="currentColor" stopOpacity="0.5" />
         </linearGradient>
-        <linearGradient id="logo_border" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="logo_border"
+          x1="24"
+          y1="0"
+          x2="24"
+          y2="48"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="currentColor" stopOpacity="0.12" />
           <stop offset="1" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
