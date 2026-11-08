@@ -1,6 +1,7 @@
 import { toast } from 'sonner'
 
 import { useData } from '@/app/providers/data-context'
+import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useOrders } from '@/features/sales/hooks/use-orders'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useCategories } from '@/features/categories/hooks/use-categories'
@@ -12,7 +13,8 @@ import { toDateInput } from '@/lib/format'
 export function useBackup(): () => void {
   const { products } = useProducts()
   const { categories } = useCategories()
-  const { payments, settings } = useData()
+  const { settings } = useData()
+  const { payments } = usePayments()
   const { orders } = useOrders()
   const { allCustomers: customers } = useCustomers()
 

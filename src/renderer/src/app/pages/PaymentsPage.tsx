@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Calendar, MoneyReceive, Wallet } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
+import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useOrders } from '@/features/sales/hooks/use-orders'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { PageHeader } from '@/components/shared/page-header'
@@ -14,7 +14,7 @@ import { buildReceipts } from '@/features/payments/utils'
 import { formatCurrency, isSameDay, isSameMonth } from '@/lib/format'
 
 export function PaymentsPage(): React.JSX.Element {
-  const { payments } = useData()
+  const { payments } = usePayments()
   const { orders } = useOrders()
   const { allCustomers: customers } = useCustomers()
   const rows = useCustomerRows()

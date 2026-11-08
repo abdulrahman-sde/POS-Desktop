@@ -3,6 +3,8 @@ import { randomUUID } from 'crypto'
 import type { AddCustomerInput, Customer, UpdateCustomerInput } from '@shared/customers/types'
 import { getDb } from '../../db/connection'
 import { UserError } from '../../lib/ipc'
+import { sumPaidByCustomer } from '../payments/payments.queries'
+import { unpaidAtSale } from '../sales/sales.queries'
 import * as q from './customers.queries'
 
 export function listCustomers(): Customer[] {
@@ -36,5 +38,11 @@ export function updateCustomer(input: UpdateCustomerInput): Customer {
 export function deleteCustomer(id: string): void {
   const db = getDb()
   if (!q.findActiveCustomerById(db, id)) throw new UserError('This customer no longer exists.')
+  const owed = unpaidAtSale(db, id) - sumPaidByCustomer(db, id)
+  if (owed > 0) {
+    throw new UserError(
+      `This customer still owes you Rs ${new Intl.NumberFormat('en-PK').format(owed)}. Receive payment first.`
+    )
+  }
   q.softDeleteCustomer(db, id, new Date().toISOString())
 }

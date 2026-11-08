@@ -29,3 +29,15 @@ export const insertOrder = (db: DbOrTx, row: typeof orders.$inferInsert) =>
 
 export const insertOrderItem = (db: DbOrTx, row: typeof orderItems.$inferInsert) =>
   db.insert(orderItems).values(row).run()
+
+export const unpaidAtSale = (db: DbOrTx, customerId: string): number =>
+  db.get<{ n: number }>(sql`
+    select coalesce(sum(total - min(advance, total)), 0) as n
+    from (
+      select
+        max(0, coalesce((select sum(qty * unit_price) from order_items where order_id = o.id), 0) - o.discount) as total,
+        o.advance as advance
+      from orders o
+      where o.customer_id = ${customerId}
+    )
+  `)?.n ?? 0

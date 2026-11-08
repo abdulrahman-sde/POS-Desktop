@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react'
 
-import type { Payment } from '@/features/payments/types'
 import type { Purchase, PurchaseItem, SupplierPayment } from '@/features/purchases/types'
 import type { PaymentMethod } from '@/features/sales/types'
 import type { ShopSettings } from '@/features/settings/types'
@@ -18,16 +17,12 @@ export type NewSupplierPaymentInput = Pick<
   'supplierId' | 'amount' | 'method' | 'note'
 >
 
-export type NewPaymentInput = Pick<Payment, 'customerId' | 'amount' | 'method' | 'note'>
-
 export type DataContextValue = {
   purchases: Purchase[]
   supplierPayments: SupplierPayment[]
-  payments: Payment[]
   settings: ShopSettings
   createPurchase: (input: NewPurchaseInput) => Purchase
   paySupplier: (input: NewSupplierPaymentInput) => SupplierPayment
-  recordPayment: (input: NewPaymentInput) => Payment
   updateSettings: (patch: Partial<ShopSettings>) => void
 }
 

@@ -42,9 +42,9 @@ One feature goes through these layers, in order:
 - `features/<feature>/api/`: `<feature>.api.ts` only calls `window.api` and returns the raw `{ ok, data } | { ok: false, message }` answer; `<feature>.keys.ts` holds the React Query keys.
 - `features/<feature>/hooks/`: `useX` (read, via `useApiQuery`) and mutation hooks (via `useApiMutation`, which unwraps the answer). A write hook invalidates every key whose data it changed. Form logic (state, validation, submit) lives in a hook too, so components only render.
 
-Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted, nor a supplier you still owe; a category only when it has no products.
+Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted (the backend works it out from orders and payments); a supplier you still owe cannot be deleted either (checked on screen until purchases are built); a category only when it has no products.
 
-Components never fetch or save directly. Done so far: categories, products, customers, suppliers and sales (orders and their items). Purchases and customer/supplier payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then saving a Buy Stock bill does not add stock.
+Components never fetch or save directly. Done so far: categories, products, customers, suppliers, sales (orders and their items) and customer payments. Purchases and supplier payments (plus shop settings) still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then saving a Buy Stock bill does not add stock.
 
 ## Code style
 
@@ -139,7 +139,7 @@ Product categories are NOT hard-coded. The owner manages them on the Categories 
 
 ## Money model
 
-Creating a sale (`sales:createOrder`) is one transaction in `sales.service.ts`: it checks the customer, the stock, the discount, that Money received is not more than the total and that a walk-in customer pays in full, makes the invoice number (INV-1001, ...), saves each item with the product's name and cost at that moment (`costPrice`) and the price sold (`unitPrice`), and lowers stock. A failed sale changes nothing. Invoice status and what a customer owes are still worked out on screen (`useInvoices()`, `features/sales/utils.ts`) from orders plus payments.
+Creating a sale (`sales:createOrder`) is one transaction in `sales.service.ts`: it checks the customer, the stock, the discount, that Money received is not more than the total and that a walk-in customer pays in full, makes the invoice number (INV-1001, ...), saves each item with the product's name and cost at that moment (`costPrice`) and the price sold (`unitPrice`), and lowers stock. A failed sale changes nothing. Money received later is saved as a payment (`payments:record`, whole rupees, any amount above zero: paying more than is owed is allowed). Invoice status and what a customer owes are worked out on screen (`useInvoices()`, `features/sales/utils.ts`) from orders plus payments.
 
 Money paid while making a sale is stored on the order (`advance`). Money paid later is a `Payment`. `features/payments/utils.ts` (`buildReceipts`) merges both so the Payments page shows every rupee received. Customer balance and invoice status are computed in `features/sales/utils.ts`.
 

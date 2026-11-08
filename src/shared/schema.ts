@@ -2,6 +2,7 @@
 // tables. When you add a feature, export its table here.
 export * from './categories/table'
 export * from './customers/table'
+export * from './payments/table'
 export * from './products/table'
 export * from './sales/table'
 export * from './suppliers/table'

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import type { NewOrderInput } from '@shared/sales/types'
-import { useData } from '@/app/providers/data-context'
+import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useProducts } from '@/features/products/hooks/use-products'
 import type { Product } from '@/features/products/types'
@@ -19,7 +19,7 @@ type CartLine = { productId: string; qty: number; unitPrice: number }
 // All the state and rules of the sale screen: cart lines, customer, discount, advance.
 export function usePosCart() {
   const { products } = useProducts()
-  const { payments } = useData()
+  const { payments } = usePayments()
   const { orders } = useOrders()
   const { customers } = useCustomers()
   const [lines, setLines] = useState<CartLine[]>([])

@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 import { categoriesPreload } from './modules/categories'
 import { customersPreload } from './modules/customers'
+import { paymentsPreload } from './modules/payments'
 import { productsPreload } from './modules/products'
 import { salesPreload } from './modules/sales'
 import { suppliersPreload } from './modules/suppliers'
@@ -13,6 +14,7 @@ import { suppliersPreload } from './modules/suppliers'
 export const api = {
   categories: categoriesPreload,
   customers: customersPreload,
+  payments: paymentsPreload,
   products: productsPreload,
   sales: salesPreload,
   suppliers: suppliersPreload

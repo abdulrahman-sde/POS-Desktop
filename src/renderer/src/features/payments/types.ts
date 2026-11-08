@@ -1,11 +1,27 @@
+import type { Payment } from '@shared/payments/types'
 import type { PaymentMethod } from '@/features/sales/types'
 
-// A payment a customer makes later, to reduce what they owe.
-export type Payment = {
-  id: string
+export type { Payment }
+
+export type PaymentsResult = {
+  payments: Payment[]
+  isLoading: boolean
+}
+
+export type PaymentFormFields = {
   customerId: string
-  amount: number
+  amount: string
   method: PaymentMethod
   note: string
-  date: string
+}
+
+export type RecordPaymentDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  customerId?: string
+}
+
+export type PaymentFormProps = {
+  customerId?: string
+  onDone: () => void
 }
