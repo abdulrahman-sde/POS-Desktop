@@ -29,7 +29,7 @@ export function RecentOrdersCard({ rows }: { rows: Row[] }): React.JSX.Element {
           <Button
             key={order.id}
             variant="ghost"
-            className="h-auto w-full justify-between gap-3 rounded-none px-0 py-2 font-normal"
+            className="h-auto w-full justify-between gap-3 rounded-none bg-transparent px-0 py-2 font-normal hover:bg-muted"
             onClick={() => openInvoice(order.id)}
           >
             <span className="flex min-w-0 flex-col items-start">
