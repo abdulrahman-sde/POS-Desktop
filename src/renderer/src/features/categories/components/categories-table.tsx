@@ -3,7 +3,6 @@ import { Category as CategoryIcon, Edit, Trash } from 'reicon-react'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
 import { EmptyState } from '@/components/shared/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -25,12 +24,12 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { formatCurrency, plural } from '@/lib/format'
-import type { CategoryRow } from '../hooks/use-category-rows'
-import type { Category } from '../types'
+import { useDeleteCategory } from '../hooks/use-category-mutations'
+import type { Category, CategoryRow } from '../types'
 import { CategoryFormDialog } from './category-form-dialog'
 
 export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.Element {
-  const { deleteCategory } = useData()
+  const deleteCategory = useDeleteCategory()
   const [editing, setEditing] = useState<Category | undefined>()
   const [deleting, setDeleting] = useState<Category | null>(null)
 
@@ -128,10 +127,13 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.El
             </Button>
             <Button
               variant="destructive"
+              disabled={deleteCategory.isPending}
               onClick={() => {
                 if (deleting) {
-                  deleteCategory(deleting.id)
-                  toast.success(`${deleting.name} deleted`)
+                  // A refused delete (the backend counts the products) shows its message as a toast.
+                  deleteCategory.mutate(deleting, {
+                    onError: (error) => toast.error(error.message)
+                  })
                 }
                 setDeleting(null)
               }}

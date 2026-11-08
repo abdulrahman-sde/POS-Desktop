@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
+import { addStockSchema } from '@shared/products/schema'
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,12 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { toNumber } from '@/lib/format'
-import type { Product } from '../types'
-
-type AddStockDialogProps = {
-  product: Product | null
-  onOpenChange: (open: boolean) => void
-}
+import { useAddStock } from '../hooks/use-product-mutations'
+import { PRODUCT_UNIT, type AddStockDialogProps, type AddStockFormProps } from '../types'
 
 export function AddStockDialog({ product, onOpenChange }: AddStockDialogProps): React.JSX.Element {
   return (
@@ -31,23 +27,21 @@ export function AddStockDialog({ product, onOpenChange }: AddStockDialogProps): 
   )
 }
 
-function AddStockForm({
-  product,
-  onDone
-}: {
-  product: Product
-  onDone: () => void
-}): React.JSX.Element {
-  const { addStock } = useData()
+function AddStockForm({ product, onDone }: AddStockFormProps): React.JSX.Element {
+  const addStock = useAddStock()
   const [qty, setQty] = useState('')
   const [error, setError] = useState('')
 
-  const submit = (): void => {
-    const value = toNumber(qty)
-    if (value <= 0) return setError('Enter how many units arrived.')
-    addStock(product.id, value)
-    toast.success(`Added ${value} ${product.unit} to ${product.name}`)
-    onDone()
+  const submit = async (): Promise<void> => {
+    const checked = addStockSchema.safeParse({ id: product.id, qty: toNumber(qty) })
+    if (!checked.success) return setError(checked.error.issues[0].message)
+    try {
+      await addStock.mutateAsync(checked.data)
+      toast.success(`Added ${checked.data.qty} ${PRODUCT_UNIT} to ${product.name}`)
+      onDone()
+    } catch (error) {
+      setError((error as Error).message)
+    }
   }
 
   return (
@@ -55,14 +49,14 @@ function AddStockForm({
       <DialogHeader>
         <DialogTitle>Add stock</DialogTitle>
         <DialogDescription>
-          {product.name}: you have {product.stock} {product.unit} now.
+          {product.name}: you have {product.stock} {PRODUCT_UNIT} now.
         </DialogDescription>
       </DialogHeader>
-      <FormField label={`How many ${product.unit} came in?`} htmlFor="stock-qty" error={error}>
+      <FormField label={`How many ${PRODUCT_UNIT} came in?`} htmlFor="stock-qty" error={error}>
         <Input
           id="stock-qty"
           type="number"
-          inputMode="decimal"
+          inputMode="numeric"
           min={0}
           autoFocus
           value={qty}
@@ -77,7 +71,9 @@ function AddStockForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>Add stock</Button>
+        <Button onClick={submit} disabled={addStock.isPending}>
+          Add stock
+        </Button>
       </DialogFooter>
     </>
   )

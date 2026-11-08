@@ -1,3 +1,4 @@
+import type { Product } from '@/features/products/types'
 import type { PaymentMethod } from '@/features/sales/types'
 
 // One product on a bill you received from a supplier.
@@ -29,4 +30,8 @@ export type SupplierPayment = {
   method: PaymentMethod
   note: string
   date: string
+}
+
+export type PurchaseProductSearchProps = {
+  onAdd: (product: Product) => void
 }

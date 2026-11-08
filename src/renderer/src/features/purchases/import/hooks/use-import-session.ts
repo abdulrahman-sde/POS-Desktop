@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { categoriesApi } from '@/features/categories/api/categories.api'
+import { categoryKeys } from '@/features/categories/api/categories.keys'
+import { useCategories } from '@/features/categories/hooks/use-categories'
 import { OTHERS_CATEGORY } from '@/features/categories/types'
-import { autoSalePrice, newProductExtras } from '@/features/products/utils'
+import { productsApi } from '@/features/products/api/products.api'
+import { productKeys } from '@/features/products/api/products.keys'
+import { useProducts } from '@/features/products/hooks/use-products'
+import { unwrap } from '@/lib/api-result'
 import { extractInvoice } from '../extract'
 import { findProductByName } from '../match'
 import type { ExtractedInvoice, ImportEntry, ImportRow } from '../types'
@@ -16,9 +23,10 @@ export type ImportSession = {
   rows: ImportRow[]
 }
 
-// The invoice being imported. It lives in a provider (not in the page), so leaving the page and coming back loses nothing.
 export function useImportSession() {
-  const { products, categories, addProduct, addCategory } = useData()
+  const queryClient = useQueryClient()
+  const { products } = useProducts()
+  const { categories } = useCategories()
   const [session, setSession] = useState<ImportSession | null>(null)
 
   const start = async (file: File): Promise<boolean> => {
@@ -26,7 +34,6 @@ export function useImportSession() {
     try {
       const invoice = await extractInvoice(file)
       const rows: ImportRow[] = invoice.lines.map((line) => {
-        // An existing product only when the name is the same (capital letters ignored). Everything else is new.
         const match = findProductByName(line.name, products)
         return {
           id: line.id,
@@ -95,12 +102,11 @@ export function useImportSession() {
   const pickProduct = (id: string, productId: string): void => patchRow(id, { productId })
   const pickNew = (id: string): void => patchRow(id, { productId: null })
 
-  // Creates the new products (and any new categories) and returns the lines for the bill. Nothing is created before this.
-  const commit = (): ImportEntry[] => {
+  const commit = async (): Promise<ImportEntry[]> => {
     if (!session) return []
     const entries: ImportEntry[] = []
-    const madeCategories = new Set(categories.map((c) => c.name))
-    const madeProducts = new Map<string, string>() // two lines for the same new product make only one product
+    const categoryIds = new Map(categories.map((c) => [c.name.toLowerCase(), c.id]))
+    const madeProducts = new Map<string, string>()
 
     for (const row of session.rows.filter((r) => r.included)) {
       if (row.productId) {
@@ -109,29 +115,36 @@ export function useImportSession() {
       }
 
       const category = row.category || OTHERS_CATEGORY
-      if (!madeCategories.has(category)) {
-        addCategory(category)
-        madeCategories.add(category)
+      let categoryId = categoryIds.get(category.toLowerCase())
+      if (!categoryId) {
+        categoryId = unwrap(await categoriesApi.add(category)).id
+        categoryIds.set(category.toLowerCase(), categoryId)
       }
-      const key = `${row.name.trim().toLowerCase()}|${category}`
+      const key = row.name.trim().toLowerCase()
       let productId = madeProducts.get(key)
       if (!productId) {
-        productId = addProduct({
-          name: row.name.trim(),
-          category,
-          brand: row.details.brand,
-          costPrice: row.costPrice,
-          salePrice: row.details.salePrice ?? autoSalePrice(row.costPrice),
-          stock: 0, // the bill adds the quantity
-          reorderLevel: row.details.reorderLevel,
-          shelf: row.details.shelf,
-          ...newProductExtras(category)
-        }).id
+        const product = unwrap(
+          await productsApi.add({
+            name: row.name.trim(),
+            categoryId,
+            brand: row.details.brand,
+            costPrice: Math.round(row.costPrice),
+            salePrice: row.details.salePrice ?? undefined,
+            stock: 0,
+            reorderLevel: row.details.reorderLevel,
+            shelf: row.details.shelf
+          })
+        )
+        productId = product.id
         madeProducts.set(key, productId)
       }
       entries.push({ productId, qty: row.qty, costPrice: row.costPrice })
     }
 
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: productKeys.all })
+    ])
     return entries
   }
 

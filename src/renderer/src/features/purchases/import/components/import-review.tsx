@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { Add, Edit, Trash } from 'reicon-react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
 import { CategoryChip } from '@/components/shared/category-chip'
 import { selectedClasses } from '@/components/shared/selected-classes'
 import { Badge } from '@/components/ui/badge'
@@ -11,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
+import { useProducts } from '@/features/products/hooks/use-products'
+import { PRODUCT_UNIT } from '@/features/products/types'
 import { formatCurrency, plural } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ImportSessionApi } from '../hooks/use-import-session'
@@ -74,7 +75,7 @@ export function ImportReview({
   onAddToBill: () => void
   onDiscard: () => void
 }): React.JSX.Element {
-  const { products } = useData()
+  const { products } = useProducts()
   const { session, addRow, patchRow, pickProduct, pickNew } = importer
   const [viewing, setViewing] = useState<ImportRow | null>(null) // opened the matched product
   const [choosing, setChoosing] = useState<ImportRow | null>(null) // picking a different product
@@ -266,7 +267,7 @@ export function ImportReview({
                                   <div className="flex flex-col">
                                     <span>{product.name}</span>
                                     <span className="opacity-70">
-                                      {product.stock} {product.unit} in stock
+                                      {product.stock} {PRODUCT_UNIT} in stock
                                     </span>
                                   </div>
                                 </TooltipContent>

@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
+import { useCategories } from '@/features/categories/hooks/use-categories'
+import { useProducts } from '@/features/products/hooks/use-products'
 import { EmptyState } from '@/components/shared/empty-state'
 import { SearchField } from '@/components/shared/search-field'
 import { Button } from '@/components/ui/button'
@@ -20,7 +21,8 @@ export function PosProductPicker({
   qtyInCart,
   onAdd
 }: PosProductPickerProps): React.JSX.Element {
-  const { products, categories: allCategories } = useData()
+  const { products } = useProducts()
+  const { categories: allCategories } = useCategories()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   // Which tile the keyboard has selected. It is shown once you type or press an arrow key.
@@ -38,13 +40,9 @@ export function PosProductPicker({
     return products.filter((product) => {
       if (category !== 'all' && product.category !== category) return false
       if (!text) return true
-      return [
-        product.name,
-        product.sku,
-        product.barcode,
-        product.brand,
-        product.compatibleModels
-      ].some((value) => value.toLowerCase().includes(text))
+      return [product.name, product.itemCode, product.brand].some((value) =>
+        value.toLowerCase().includes(text)
+      )
     })
   }, [products, query, category])
 
@@ -85,9 +83,7 @@ export function PosProductPicker({
 
     const text = query.trim().toLowerCase()
     if (!text && !navigated) return
-    const exact = text
-      ? products.find((p) => p.barcode.toLowerCase() === text || p.sku.toLowerCase() === text)
-      : undefined
+    const exact = text ? products.find((p) => p.itemCode.toLowerCase() === text) : undefined
     const match = exact ?? visible[current]
     if (!match) {
       toast.error('No product found')

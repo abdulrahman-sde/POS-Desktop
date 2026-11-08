@@ -1,35 +1,27 @@
 import { useMemo, useState } from 'react'
 
-import { demoCategories } from '@/features/categories/demo-data'
-import { demoCustomers } from '@/features/customers/demo-data'
-import { demoPurchases, demoSupplierPayments } from '@/features/purchases/demo-data'
-import { demoSuppliers } from '@/features/suppliers/demo-data'
-import { demoPayments } from '@/features/payments/demo-data'
-import { demoProducts } from '@/features/products/demo-data'
-import { demoOrders } from '@/features/sales/demo-data'
 import { summarizeInvoices } from '@/features/sales/utils'
 import { defaultSettings } from '@/features/settings/types'
 import { newId } from '@/lib/format'
+import type { Customer } from '@/features/customers/types'
+import type { Payment } from '@/features/payments/types'
+import type { Purchase, SupplierPayment } from '@/features/purchases/types'
+import type { Order } from '@/features/sales/types'
+import type { Supplier } from '@/features/suppliers/types'
 import { DataContext, type DataContextValue } from './data-context'
 
-// Demo data lives in memory only: it resets when the app restarts.
-// Later this provider is replaced by real database calls; screens keep using useData().
 export function DataProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const [products, setProducts] = useState(demoProducts)
-  const [categories, setCategories] = useState(demoCategories)
-  const [suppliers, setSuppliers] = useState(demoSuppliers)
-  const [purchases, setPurchases] = useState(demoPurchases)
-  const [supplierPayments, setSupplierPayments] = useState(demoSupplierPayments)
-  const [customers, setCustomers] = useState(demoCustomers)
-  const [orders, setOrders] = useState(demoOrders)
-  const [payments, setPayments] = useState(demoPayments)
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [purchases, setPurchases] = useState<Purchase[]>([])
+  const [supplierPayments, setSupplierPayments] = useState<SupplierPayment[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
+  const [payments, setPayments] = useState<Payment[]>([])
   const [settings, setSettings] = useState(defaultSettings)
 
   const invoices = useMemo(() => summarizeInvoices(orders, payments), [orders, payments])
 
   const value: DataContextValue = {
-    products,
-    categories,
     suppliers,
     purchases,
     supplierPayments,
@@ -38,32 +30,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
     payments,
     settings,
     invoices,
-
-    addProduct: (input) => {
-      const product = { ...input, id: newId('p') }
-      setProducts((prev) => [product, ...prev])
-      return product
-    },
-    updateProduct: (id, patch) =>
-      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p))),
-    addStock: (id, qty) =>
-      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, stock: p.stock + qty } : p))),
-
-    addCategory: (name) => {
-      const category = { id: newId('cat'), name: name.trim() }
-      setCategories((prev) => [...prev, category])
-      return category
-    },
-    // Renaming a category also renames it on every product that uses it.
-    renameCategory: (id, name) => {
-      const old = categories.find((c) => c.id === id)?.name
-      setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, name: name.trim() } : c)))
-      if (old)
-        setProducts((prev) =>
-          prev.map((p) => (p.category === old ? { ...p, category: name.trim() } : p))
-        )
-    },
-    deleteCategory: (id) => setCategories((prev) => prev.filter((c) => c.id !== id)),
 
     addSupplier: (input) => {
       const supplier = { ...input, id: newId('s'), createdAt: new Date().toISOString() }
@@ -84,14 +50,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
         createdAt: new Date().toISOString()
       }
       setPurchases((prev) => [purchase, ...prev])
-      setProducts((prev) =>
-        prev.map((product) => {
-          const bought = purchase.items.find((item) => item.productId === product.id)
-          return bought
-            ? { ...product, stock: product.stock + bought.qty, costPrice: bought.costPrice }
-            : product
-        })
-      )
       return purchase
     },
     paySupplier: (input) => {
@@ -117,13 +75,6 @@ export function DataProvider({ children }: { children: React.ReactNode }): React
         createdAt: new Date().toISOString()
       }
       setOrders((prev) => [order, ...prev])
-      // Selling reduces stock.
-      setProducts((prev) =>
-        prev.map((product) => {
-          const sold = order.items.find((item) => item.productId === product.id)
-          return sold ? { ...product, stock: Math.max(0, product.stock - sold.qty) } : product
-        })
-      )
       return order
     },
 

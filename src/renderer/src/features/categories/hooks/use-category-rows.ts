@@ -1,16 +1,12 @@
 import { useMemo } from 'react'
 
-import { useData } from '@/app/providers/data-context'
-import type { Category } from '../types'
-
-export type CategoryRow = {
-  category: Category
-  productCount: number
-  stockValue: number // what the items in this category cost you
-}
+import { useProducts } from '@/features/products/hooks/use-products'
+import type { CategoryRow } from '../types'
+import { useCategories } from './use-categories'
 
 export function useCategoryRows(): CategoryRow[] {
-  const { categories, products } = useData()
+  const { categories } = useCategories()
+  const { products } = useProducts()
 
   return useMemo(
     () =>

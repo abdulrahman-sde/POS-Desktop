@@ -1,3 +1,5 @@
+import { format, isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, parseISO } from 'date-fns'
+
 const numberFormat = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 })
 
 export function formatCurrency(amount: number): string {
@@ -6,27 +8,23 @@ export function formatCurrency(amount: number): string {
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  })
+  return format(parseISO(iso), 'dd MMM yyyy')
 }
 
 export function formatDateTime(iso: string): string {
-  const time = new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-  return `${formatDate(iso)}, ${time}`
+  return format(parseISO(iso), 'dd MMM yyyy, HH:mm')
 }
 
-export function daysAgo(days: number, hour = 12): string {
-  const date = new Date()
-  date.setDate(date.getDate() - days)
-  date.setHours(hour, 0, 0, 0)
-  return date.toISOString()
+export function formatShortDate(date: Date): string {
+  return format(date, 'd MMM')
+}
+
+export function formatWeekdayDate(date: Date): string {
+  return format(date, 'EEE d MMM')
 }
 
 export function isSameDay(a: string | Date, b: string | Date): boolean {
-  return new Date(a).toDateString() === new Date(b).toDateString()
+  return dfIsSameDay(a, b)
 }
 
 export function plural(count: number, word: string): string {
@@ -42,19 +40,14 @@ export function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
-// "2026-11-07" for <input type="date">, in local time.
 export function toDateInput(date: Date = new Date()): string {
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${date.getFullYear()}-${month}-${day}`
+  return format(date, 'yyyy-MM-dd')
 }
 
 export function fromDateInput(value: string): string {
-  return new Date(`${value}T12:00:00`).toISOString()
+  return parseISO(`${value}T12:00:00`).toISOString()
 }
 
 export function isSameMonth(a: string | Date, b: string | Date): boolean {
-  const first = new Date(a)
-  const second = new Date(b)
-  return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth()
+  return dfIsSameMonth(a, b)
 }

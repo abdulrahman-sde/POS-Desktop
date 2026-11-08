@@ -16,7 +16,6 @@ export function PurchaseLines({ cart }: { cart: PurchaseCart }): React.JSX.Eleme
   }
 
   return (
-    // min-w keeps the row from being squashed. In a narrow panel the list gets a scrollbar at the bottom.
     <div className="min-w-80">
       <QtyPriceHeader priceLabel="Cost price" />
       <ul className="flex flex-col gap-2 p-2">

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 
 import { useData, type NewPurchaseInput } from '@/app/providers/data-context'
-import type { Product } from '@/features/products/types'
+import { useProducts } from '@/features/products/hooks/use-products'
+import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import type { PaymentMethod } from '@/features/sales/types'
 import { toNumber } from '@/lib/format'
 import type { PurchaseItem } from '../types'
@@ -12,7 +13,8 @@ type Line = { productId: string; qty: number; costPrice: number }
 
 // All the state and rules of the Buy Stock screen: the bill lines, the supplier, and the money paid.
 export function usePurchaseCart() {
-  const { products, suppliers, purchases, supplierPayments } = useData()
+  const { products } = useProducts()
+  const { suppliers, purchases, supplierPayments } = useData()
   const [lines, setLines] = useState<Line[]>([])
   const [supplierId, setSupplierId] = useState(suppliers[0]?.id ?? '')
   // Money paid to the supplier now. Starts at 0. null means "the full amount".
@@ -28,7 +30,7 @@ export function usePurchaseCart() {
               {
                 productId: product.id,
                 name: product.name,
-                unit: product.unit,
+                unit: PRODUCT_UNIT,
                 qty: line.qty,
                 costPrice: line.costPrice
               }

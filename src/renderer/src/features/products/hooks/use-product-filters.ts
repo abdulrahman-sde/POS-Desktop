@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react'
 
-import { useData } from '@/app/providers/data-context'
+import { useCategories } from '@/features/categories/hooks/use-categories'
 import { getStockLevel, type Product } from '../types'
 
 export type StockFilter = 'all' | 'low' | 'out'
 
 // Search text, category and stock filters for the products list.
 export function useProductFilters(products: Product[], initialCategory = 'all') {
-  const { categories: allCategories } = useData()
+  const { categories: allCategories } = useCategories()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState(initialCategory)
   const [stock, setStock] = useState<StockFilter>('all')
@@ -22,13 +22,9 @@ export function useProductFilters(products: Product[], initialCategory = 'all') 
       if (stock === 'low' && level !== 'low') return false
       if (stock === 'out' && level !== 'out') return false
       if (!text) return true
-      return [
-        product.name,
-        product.sku,
-        product.barcode,
-        product.brand,
-        product.compatibleModels
-      ].some((value) => value.toLowerCase().includes(text))
+      return [product.name, product.itemCode, product.brand].some((value) =>
+        value.toLowerCase().includes(text)
+      )
     })
   }, [products, query, category, stock])
 

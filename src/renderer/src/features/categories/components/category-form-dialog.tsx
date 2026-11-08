@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
+import { addCategorySchema } from '@shared/categories/schema'
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,14 +12,8 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import type { Category } from '../types'
-
-type CategoryFormDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  category?: Category // when set, we are renaming
-  onSaved?: (name: string) => void
-}
+import { useAddCategory, useRenameCategory } from '../hooks/use-category-mutations'
+import type { CategoryFormDialogProps, CategoryFormProps } from '../types'
 
 export function CategoryFormDialog({
   open,
@@ -39,36 +32,25 @@ export function CategoryFormDialog({
   )
 }
 
-function CategoryForm({
-  category,
-  onSaved,
-  onDone
-}: {
-  category?: Category
-  onSaved?: (name: string) => void
-  onDone: () => void
-}): React.JSX.Element {
-  const { categories, addCategory, renameCategory } = useData()
+function CategoryForm({ category, onSaved, onDone }: CategoryFormProps): React.JSX.Element {
+  const addCategory = useAddCategory()
+  const renameCategory = useRenameCategory()
   const [name, setName] = useState(category?.name ?? '')
   const [error, setError] = useState('')
 
-  const submit = (): void => {
-    const value = name.trim()
-    if (!value) return setError('Type the category name.')
-    const taken = categories.some(
-      (c) => c.id !== category?.id && c.name.toLowerCase() === value.toLowerCase()
-    )
-    if (taken) return setError('You already have a category with this name.')
+  const submit = async (): Promise<void> => {
+    const checked = addCategorySchema.safeParse({ name })
+    if (!checked.success) return setError(checked.error.issues[0].message)
+    const value = checked.data.name
 
-    if (category) {
-      renameCategory(category.id, value)
-      toast.success('Category renamed')
-    } else {
-      addCategory(value)
-      toast.success(`${value} added`)
+    try {
+      if (category) await renameCategory.mutateAsync({ id: category.id, name: value })
+      else await addCategory.mutateAsync(value)
+      onSaved?.(value)
+      onDone()
+    } catch (error) {
+      setError((error as Error).message)
     }
-    onSaved?.(value)
-    onDone()
   }
 
   return (
@@ -98,7 +80,9 @@ function CategoryForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>{category ? 'Save' : 'Add category'}</Button>
+        <Button onClick={submit} disabled={addCategory.isPending || renameCategory.isPending}>
+          {category ? 'Save' : 'Add category'}
+        </Button>
       </DialogFooter>
     </>
   )

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Add, Box, Category, CloseCircle, Money, Warning } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
 import { OptionSelect } from '@/components/shared/option-select'
 import { PageHeader } from '@/components/shared/page-header'
 import { SearchField } from '@/components/shared/search-field'
@@ -12,12 +11,13 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AddStockDialog } from '@/features/products/components/add-stock-dialog'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
 import { ProductsTable } from '@/features/products/components/products-table'
+import { useProducts } from '@/features/products/hooks/use-products'
 import { useProductFilters, type StockFilter } from '@/features/products/hooks/use-product-filters'
 import { getStockLevel, type Product } from '@/features/products/types'
 import { formatCurrency } from '@/lib/format'
 
 export function ProductsPage(): React.JSX.Element {
-  const { products } = useData()
+  const { products } = useProducts()
   const [params] = useSearchParams()
   const filters = useProductFilters(products, params.get('category') ?? 'all')
   const [formOpen, setFormOpen] = useState(false)
@@ -78,7 +78,7 @@ export function ProductsPage(): React.JSX.Element {
       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center">
         <SearchField
           className="md:max-w-xs md:flex-1"
-          placeholder="Search part, brand, model or barcode"
+          placeholder="Search part, brand or item code"
           value={filters.query}
           onChange={(event) => filters.setQuery(event.target.value)}
         />

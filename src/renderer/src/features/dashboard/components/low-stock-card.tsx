@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { StockBadge } from '@/components/shared/stock-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Product } from '@/features/products/types'
+import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 
 export function LowStockCard({ products }: { products: Product[] }): React.JSX.Element {
   return (
@@ -25,7 +25,7 @@ export function LowStockCard({ products }: { products: Product[] }): React.JSX.E
               <span className="flex min-w-0 flex-col">
                 <span className="break-words">{product.name}</span>
                 <span className="text-xs text-muted-foreground">
-                  {product.stock} {product.unit} left
+                  {product.stock} {PRODUCT_UNIT} left
                 </span>
               </span>
               <StockBadge product={product} />

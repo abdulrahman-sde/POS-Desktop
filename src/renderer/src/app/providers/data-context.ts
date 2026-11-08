@@ -1,10 +1,8 @@
 import { createContext, useContext } from 'react'
 
-import type { Category } from '@/features/categories/types'
 import type { Customer } from '@/features/customers/types'
 import type { Payment } from '@/features/payments/types'
 import type { Purchase, PurchaseItem, SupplierPayment } from '@/features/purchases/types'
-import type { Product } from '@/features/products/types'
 import type { InvoiceSummary, Order, OrderItem, PaymentMethod } from '@/features/sales/types'
 import type { Supplier } from '@/features/suppliers/types'
 import type { ShopSettings } from '@/features/settings/types'
@@ -34,8 +32,6 @@ export type NewSupplierPaymentInput = Pick<
 export type NewPaymentInput = Pick<Payment, 'customerId' | 'amount' | 'method' | 'note'>
 
 export type DataContextValue = {
-  products: Product[]
-  categories: Category[]
   suppliers: Supplier[]
   purchases: Purchase[]
   supplierPayments: SupplierPayment[]
@@ -44,12 +40,6 @@ export type DataContextValue = {
   payments: Payment[]
   settings: ShopSettings
   invoices: Map<string, InvoiceSummary>
-  addProduct: (input: Omit<Product, 'id'>) => Product
-  updateProduct: (id: string, patch: Partial<Omit<Product, 'id'>>) => void
-  addStock: (id: string, qty: number) => void
-  addCategory: (name: string) => Category
-  renameCategory: (id: string, name: string) => void
-  deleteCategory: (id: string) => void
   addSupplier: (input: Omit<Supplier, 'id' | 'createdAt'>) => Supplier
   updateSupplier: (id: string, patch: Partial<Omit<Supplier, 'id' | 'createdAt'>>) => void
   deleteSupplier: (id: string) => void

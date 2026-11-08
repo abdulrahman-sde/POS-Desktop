@@ -11,6 +11,11 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
+# The .sql files that create and upgrade the database tables. The app reads them when it starts,
+# so they must be copied next to the installed app (see src/main/index.ts).
+extraResources:
+  - from: src/main/db/migrations
+    to: migrations
 win:
   executableName: babar-trades
   target:

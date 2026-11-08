@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import type { Product } from '@/features/products/types'
+import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import { formatCurrency } from '@/lib/format'
 
 type MatchedProductDialogProps = {
@@ -53,7 +53,7 @@ export function MatchedProductDialog({
             </DialogHeader>
 
             <div className="grid grid-cols-3 gap-2">
-              <Figure label="In stock" value={`${product.stock} ${product.unit}`} />
+              <Figure label="In stock" value={`${product.stock} ${PRODUCT_UNIT}`} />
               <Figure label="Cost price" value={formatCurrency(product.costPrice)} />
               <Figure label="Selling price" value={formatCurrency(product.salePrice)} />
             </div>

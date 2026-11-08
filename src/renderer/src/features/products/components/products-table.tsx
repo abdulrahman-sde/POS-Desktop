@@ -14,7 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/format'
-import type { Product } from '../types'
+import { PRODUCT_UNIT, type Product } from '../types'
 
 type ProductsTableProps = {
   products: Product[]
@@ -63,7 +63,7 @@ export function ProductsTable({
                 <TableCell>
                   <div className="flex flex-col items-start gap-1">
                     <span>
-                      {product.stock} {product.unit}
+                      {product.stock} {PRODUCT_UNIT}
                     </span>
                     <StockBadge product={product} />
                   </div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Add } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
+import { useProducts } from '@/features/products/hooks/use-products'
 import { CategoryChip } from '@/components/shared/category-chip'
 import { SearchField } from '@/components/shared/search-field'
 import { selectedClasses } from '@/components/shared/selected-classes'
@@ -47,7 +47,7 @@ function Chooser({
   onPick: (id: string) => void
   onNew: () => void
 }): React.JSX.Element {
-  const { products } = useData()
+  const { products } = useProducts()
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
 

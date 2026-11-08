@@ -1,5 +1,5 @@
-import { useData } from '@/app/providers/data-context'
 import { Badge } from '@/components/ui/badge'
+import { useCategories } from '@/features/categories/hooks/use-categories'
 
 // One tinted style per category. The colours are tokens in index.css (--category-1 ... --category-8) and
 // avoid the success, warning and destructive colours. Full class names are written out so Tailwind can find them.
@@ -16,7 +16,7 @@ const styles = [
 
 // A category name as a chip. Each category keeps its own colour, based on its place in the Categories list.
 export function CategoryChip({ name }: { name: string }): React.JSX.Element {
-  const { categories } = useData()
+  const { categories } = useCategories()
   const index = Math.max(
     0,
     categories.findIndex((category) => category.name === name)

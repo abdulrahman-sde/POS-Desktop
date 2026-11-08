@@ -1,25 +1,19 @@
 import { useMemo, useState } from 'react'
 import { Add } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
 import { SearchField } from '@/components/shared/search-field'
 import { Button } from '@/components/ui/button'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
-import type { Product } from '@/features/products/types'
+import { useProducts } from '@/features/products/hooks/use-products'
+import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import { cn } from '@/lib/utils'
 import { selectedClasses } from '@/components/shared/selected-classes'
+import type { PurchaseProductSearchProps } from '../types'
 
-// Search box for Buy Stock. Type a name or scan a barcode: matching products appear right below.
-// If the product is not in your list yet, "Add new product" lets you create it without leaving the bill.
-export function PurchaseProductSearch({
-  onAdd
-}: {
-  onAdd: (product: Product) => void
-}): React.JSX.Element {
-  const { products } = useData()
+export function PurchaseProductSearch({ onAdd }: PurchaseProductSearchProps): React.JSX.Element {
+  const { products } = useProducts()
   const [query, setQuery] = useState('')
   const [newOpen, setNewOpen] = useState(false)
-  // Which row is highlighted for the keyboard. The last row is always "Add a new product".
   const [active, setActive] = useState(0)
 
   const matches = useMemo(() => {
@@ -27,8 +21,8 @@ export function PurchaseProductSearch({
     if (!text) return []
     return products
       .filter((product) =>
-        [product.name, product.sku, product.barcode, product.brand, product.compatibleModels].some(
-          (value) => value.toLowerCase().includes(text)
+        [product.name, product.itemCode, product.brand].some((value) =>
+          value.toLowerCase().includes(text)
         )
       )
       .slice(0, 6)
@@ -39,11 +33,9 @@ export function PurchaseProductSearch({
     setQuery('')
   }
 
-  const newRow = matches.length // index of the "Add a new product" row
+  const newRow = matches.length
   const current = Math.min(active, newRow)
 
-  // Arrow keys move the highlight, Enter adds the highlighted row, Escape clears the box.
-  // A scanner types a barcode and presses Enter, so an exact barcode / item code match always wins.
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (!query.trim()) return
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -54,9 +46,7 @@ export function PurchaseProductSearch({
       setQuery('')
     } else if (event.key === 'Enter') {
       const text = query.trim().toLowerCase()
-      const exact = products.find(
-        (p) => p.barcode.toLowerCase() === text || p.sku.toLowerCase() === text
-      )
+      const exact = products.find((p) => p.itemCode.toLowerCase() === text)
       const match = exact ?? matches[current]
       if (match) pick(match)
       else setNewOpen(true)
@@ -96,7 +86,7 @@ export function PurchaseProductSearch({
                 <span className="text-xs text-muted-foreground">{product.brand}</span>
               </span>
               <span className="text-xs whitespace-nowrap text-muted-foreground">
-                {product.stock} {product.unit} in shop
+                {product.stock} {PRODUCT_UNIT} in shop
               </span>
             </Button>
           ))}

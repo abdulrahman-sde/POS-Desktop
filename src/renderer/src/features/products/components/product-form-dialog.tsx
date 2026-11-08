@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Add, Link } from 'reicon-react'
-import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
 import { CategoryFormDialog } from '@/features/categories/components/category-form-dialog'
 import { FormField } from '@/components/shared/form-field'
 import { OptionSelect } from '@/components/shared/option-select'
@@ -16,51 +14,11 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { formatCurrency, toNumber } from '@/lib/format'
-import type { Product } from '../types'
-import { autoSalePrice, DEFAULT_MARKUP, newProductExtras } from '../utils'
-
-// "Add details" from the invoice import: the form opens filled in with what the invoice said, and Save hands the
-// values back instead of creating a product (the product is created when the invoice is added to the bill).
-export type ProductDraft = {
-  values: {
-    name: string
-    category: string
-    brand: string
-    costPrice: number
-    salePrice: number | null // null = we add 15% to the cost price
-    quantity: number
-    reorderLevel: number
-    shelf: string
-  }
-  onSave: (values: ProductDraft['values']) => void
-  // "This is an existing product": the owner thinks the product is already in the list. Closes this form to pick it.
-  onUseExisting?: () => void
-}
-
-type ProductFormDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  product?: Product // when set, we are editing
-  onSaved?: (product: Product) => void // called after a NEW product is added
-  // Adding a product from inside a supplier bill: the bill brings the quantity, so the form does not ask for it.
-  stockFromBill?: boolean
-  draft?: ProductDraft
-}
-
-const popularBrands = [
-  'Samsung',
-  'Apple',
-  'Xiaomi',
-  'Oppo',
-  'Vivo',
-  'Infinix',
-  'Tecno',
-  'Realme',
-  'Huawei',
-  'Nokia',
-  'Generic'
-]
+import { formatCurrency } from '@/lib/format'
+import { popularBrands } from '../constants'
+import { useProductForm } from '../hooks/use-product-form'
+import type { ProductFormDialogProps, ProductFormProps } from '../types'
+import { DEFAULT_MARKUP } from '../utils'
 
 export function ProductFormDialog({
   open,
@@ -95,105 +53,23 @@ function SectionTitle({ children }: { children: string }): React.JSX.Element {
   )
 }
 
-function ProductForm({
-  product,
-  onSaved,
-  stockFromBill,
-  draft,
-  onDone
-}: {
-  product?: Product
-  onSaved?: (product: Product) => void
-  stockFromBill?: boolean
-  draft?: ProductDraft
-  onDone: () => void
-}): React.JSX.Element {
-  const { addProduct, updateProduct, categories } = useData()
+function ProductForm(props: ProductFormProps): React.JSX.Element {
+  const { product, draft, onDone } = props
+  const {
+    form,
+    errors,
+    askStock,
+    saving,
+    categoryNames,
+    cost,
+    suggested,
+    price,
+    profit,
+    text,
+    pick,
+    submit
+  } = useProductForm(props)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
-  const [form, setForm] = useState({
-    name: draft?.values.name ?? product?.name ?? '',
-    category: draft?.values.category ?? product?.category ?? categories[0]?.name ?? '',
-    brand: draft?.values.brand ?? product?.brand ?? '',
-    costPrice: String(draft?.values.costPrice ?? product?.costPrice ?? ''),
-    // empty = the app adds 15% to the cost price
-    salePrice: String(draft ? (draft.values.salePrice ?? '') : (product?.salePrice ?? '')),
-    stock: draft ? String(draft.values.quantity) : product ? String(product.stock) : '',
-    reorderLevel: String(draft?.values.reorderLevel ?? product?.reorderLevel ?? '5'),
-    shelf: draft?.values.shelf ?? product?.shelf ?? ''
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const text = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [key]: event.target.value }))
-    setErrors((prev) => ({ ...prev, [key]: '' }))
-  }
-  const pick = (key: keyof typeof form) => (value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-    setErrors((prev) => ({ ...prev, [key]: '' }))
-  }
-
-  // In draft mode the "quantity" is the quantity on the invoice, so it is always asked.
-  const askStock = draft ? true : !stockFromBill
-  // An invoice may use a category you do not have yet. It is created when the items are added to the bill.
-  const categoryNames = categories.map((c) => c.name)
-  if (form.category && !categoryNames.includes(form.category)) categoryNames.push(form.category)
-
-  const cost = toNumber(form.costPrice)
-  const suggested = cost > 0 ? autoSalePrice(cost) : 0
-  const price = toNumber(form.salePrice) > 0 ? toNumber(form.salePrice) : suggested
-  const profit = price - cost
-
-  const submit = (): void => {
-    const next: Record<string, string> = {}
-    if (!form.name.trim()) next.name = 'Enter the product name.'
-    if (!form.category) next.category = 'Choose a category, or add a new one with the + button.'
-    if (cost <= 0) next.costPrice = 'Enter the cost price.'
-    if (askStock && form.stock.trim() === '') next.stock = 'Enter how many you have.'
-    setErrors(next)
-    if (Object.keys(next).length > 0) return
-
-    const shared = {
-      name: form.name.trim(),
-      category: form.category,
-      brand: form.brand.trim(),
-      costPrice: cost,
-      salePrice: price,
-      reorderLevel: toNumber(form.reorderLevel),
-      shelf: form.shelf.trim()
-    }
-    const stock = askStock ? Math.max(0, toNumber(form.stock)) : 0
-
-    if (draft) {
-      draft.onSave({
-        name: shared.name,
-        category: shared.category,
-        brand: shared.brand,
-        costPrice: cost,
-        salePrice: toNumber(form.salePrice) > 0 ? toNumber(form.salePrice) : null,
-        quantity: stock,
-        reorderLevel: shared.reorderLevel,
-        shelf: shared.shelf
-      })
-      onDone()
-      return
-    }
-
-    if (product) {
-      // Editing only changes what this form shows. Everything else on the product stays as it was.
-      updateProduct(product.id, { ...shared, stock })
-      toast.success(`${shared.name} updated`)
-    } else {
-      onSaved?.(
-        addProduct({
-          ...shared,
-          stock,
-          ...newProductExtras(form.category)
-        })
-      )
-      toast.success(`${shared.name} added to inventory`)
-    }
-    onDone()
-  }
 
   return (
     <>
@@ -268,7 +144,7 @@ function ProductForm({
           <Input
             id="p-cost"
             type="number"
-            inputMode="decimal"
+            inputMode="numeric"
             min={0}
             value={form.costPrice}
             onChange={text('costPrice')}
@@ -282,7 +158,7 @@ function ProductForm({
           <Input
             id="p-sale"
             type="number"
-            inputMode="decimal"
+            inputMode="numeric"
             min={0}
             value={form.salePrice}
             placeholder={suggested > 0 ? String(suggested) : ''}
@@ -311,7 +187,7 @@ function ProductForm({
             <Input
               id="p-stock"
               type="number"
-              inputMode="decimal"
+              inputMode="numeric"
               min={0}
               value={form.stock}
               onChange={text('stock')}
@@ -326,7 +202,7 @@ function ProductForm({
           <Input
             id="p-reorder"
             type="number"
-            inputMode="decimal"
+            inputMode="numeric"
             min={0}
             value={form.reorderLevel}
             onChange={text('reorderLevel')}
@@ -354,7 +230,7 @@ function ProductForm({
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
-        <Button onClick={submit}>
+        <Button onClick={submit} disabled={saving}>
           {draft ? 'Save' : product ? 'Save changes' : 'Add product'}
         </Button>
       </DialogFooter>
@@ -362,7 +238,7 @@ function ProductForm({
       <CategoryFormDialog
         open={categoriesOpen}
         onOpenChange={setCategoriesOpen}
-        onSaved={(name) => setForm((prev) => ({ ...prev, category: name }))}
+        onSaved={pick('category')}
       />
     </>
   )

@@ -4,7 +4,7 @@ import { Coin } from 'reicon-react'
 import { Badge } from '@/components/ui/badge'
 import { CategoryChip } from '@/components/shared/category-chip'
 import { Button } from '@/components/ui/button'
-import { getStockLevel, type Product } from '@/features/products/types'
+import { getStockLevel, PRODUCT_UNIT, type Product } from '@/features/products/types'
 import { selectedClasses } from '@/components/shared/selected-classes'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -67,7 +67,7 @@ export function PosProductTile({
       <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <CategoryChip name={product.category} />
         <span className="text-xs text-muted-foreground">
-          {out ? 'Out of stock' : `${product.stock} ${product.unit} left`}
+          {out ? 'Out of stock' : `${product.stock} ${PRODUCT_UNIT} left`}
         </span>
       </span>
     </Button>

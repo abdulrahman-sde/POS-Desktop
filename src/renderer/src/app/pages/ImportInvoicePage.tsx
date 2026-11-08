@@ -35,12 +35,16 @@ export function ImportInvoicePage(): React.JSX.Element {
     )
   }
 
-  const addToBill = (): void => {
-    const entries = importer.commit()
-    cart.addLines(entries)
-    importer.clear()
-    toast.success(`${plural(entries.length, 'item')} added to your bill`)
-    navigate('/stock/new')
+  const addToBill = async (): Promise<void> => {
+    try {
+      const entries = await importer.commit()
+      cart.addLines(entries)
+      importer.clear()
+      toast.success(`${plural(entries.length, 'item')} added to your bill`)
+      navigate('/stock/new')
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
   }
 
   const discard = (): void => {

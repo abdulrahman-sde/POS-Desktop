@@ -1,7 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
+import { app, shell, BrowserWindow, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { closeDb, initDb } from './db/connection'
+import { registerAllIpc } from './modules'
 
 // The app is light only, even when the computer is in dark mode.
 nativeTheme.themeSource = 'light'
@@ -54,23 +56,16 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-  ipcMain.handle('app:hello', () => 'Hello from main ')
+  // Open the database. It lives in the user data folder (never inside the install folder, which
+  // Windows may lock). The migrations folder holds the .sql files that create and upgrade the tables:
+  // beside the source while developing, and copied next to the app by electron-builder when installed.
+  const migrations = app.isPackaged
+    ? join(process.resourcesPath, 'migrations')
+    : join(app.getAppPath(), 'src/main/db/migrations')
+  initDb(join(app.getPath('userData'), 'babar.db'), migrations)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Turn on every backend route (categories, products ...).
+  registerAllIpc()
 
   createWindow()
 
@@ -84,6 +79,8 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
+app.on('before-quit', () => closeDb())
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

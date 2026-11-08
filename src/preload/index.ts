@@ -1,9 +1,15 @@
-import { contextBridge,ipcRenderer } from 'electron'
+import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
-const api = {
-  hello:()=>ipcRenderer.invoke('app:hello')
+import { categoriesPreload } from './modules/categories'
+import { productsPreload } from './modules/products'
+
+// Everything the screen may ask the backend to do. Add a line here when you add a module.
+// This list is the ONLY door from the React app to the computer: anything not listed here
+// cannot be reached from the screen.
+export const api = {
+  categories: categoriesPreload,
+  products: productsPreload
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -27,13 +27,29 @@ Electron + React 19 + TypeScript desktop POS/accounting app (electron-vite, Tail
 - `components/ui/`: shadcn primitives only.
 - `components/layout/`: app shell (sidebar, layout, nav config).
 - `components/shared/`: components used by MORE THAN ONE module (page-header, stat-card, empty-state, form-field, option-select, search-field, status badges, record-payment-dialog, whatsapp-button...). If something is used by only one feature, it belongs in that feature instead.
-- `features/<name>/`: one folder per feature (products, categories, customers, sales, invoices, payments, reports, settings, dashboard). Inside: `components/` (feature-only UI), `hooks/` (feature hooks), `types.ts`, `utils.ts`, `demo-data.ts`. No pages here.
-- `app/`: `router.tsx`, `pages/` (thin route screens that compose feature and shared components), `providers/` (data provider).
+- `features/<name>/`: one folder per feature (products, categories, customers, sales, invoices, payments, reports, settings, dashboard). Inside: `api/` (calls and query keys), `components/` (feature-only UI), `hooks/` (feature hooks), `types.ts`, `constants.ts`, `utils.ts`. No pages here.
+- `app/`: `router.tsx`, `pages/` (thin route screens that compose feature and shared components), `providers/` (temporary in-memory data provider, query client wiring is in `App.tsx`).
 - `lib/`: pure helpers (format, whatsapp). `hooks/`: hooks shared across features.
 
-## Data (demo phase)
+## Data and backend
 
-All screens read and write data through `useData()` (`app/providers/data-context.ts`), backed by in-memory demo data in `app/providers/data-provider.tsx`. Business rules (invoice status, customer balance, ledger) live in `features/sales/utils.ts` and `features/customers/utils.ts`. When the real database arrives, replace the provider; screens keep using `useData()`.
+The database is SQLite (`better-sqlite3` + Drizzle ORM + Zod), owned by the Electron main process. It starts EMPTY (no demo data). Money is whole Pakistani rupees (PKR), stored as integers, no decimals. The file is `babar.db` in `app.getPath('userData')`.
+
+One feature goes through these layers, in order:
+- `src/shared/<feature>/`: `table.ts` (Drizzle table, RELATIVE imports only because drizzle-kit reads it), `schema.ts` (Zod rules with the plain-language messages, used by the forms AND the backend), `types.ts` (inferred types). Run `npm run db:generate` after changing a table; the generated .sql files in `src/main/db/migrations` run when the app starts.
+- `src/main/modules/<feature>/`: `*.ipc.ts` (routes, input checked with the schema), `*.service.ts` (rules that need the database, multi-step writes inside one transaction, `UserError` for messages the owner can read), `*.queries.ts` (Drizzle only, no rules).
+- `src/preload/modules/<feature>.ts`: the list of calls the screen may make, published as `window.api.<feature>.*`.
+- `features/<feature>/api/`: `<feature>.api.ts` only calls `window.api` and returns the raw `{ ok, data } | { ok: false, message }` answer; `<feature>.keys.ts` holds the React Query keys.
+- `features/<feature>/hooks/`: `useX` (read, via `useApiQuery`) and mutation hooks (via `useApiMutation`, which unwraps the answer). A write hook invalidates every key whose data it changed. Form logic (state, validation, submit) lives in a hook too, so components only render.
+
+Components never fetch or save directly. Done so far: categories and products. Customers, suppliers, sales, purchases and payments still use the temporary in-memory `useData()` (starts empty) until their modules are built; until then selling or buying stock does not change product stock.
+
+## Code style
+
+- No inline types in components: prop and hook-result types live in the feature's `types.ts`. Static data lives in the feature's `constants.ts`.
+- Few comments, only where the reason is not obvious.
+- Dates use `date-fns` (helpers in `lib/format.ts`).
+- A product's category is stored by id (`categoryId`); `Product.category` is the name looked up for display. Product names are unique ignoring capitals. The item code is made automatically (ITM-0001).
 
 ## Plain language (the shop owner is not technical)
 
@@ -117,7 +133,7 @@ A **Backup** button sits at the far right of the top bar (`components/layout/app
 
 ## Categories
 
-Product categories are NOT hard-coded. The owner manages them on the Categories screen (`/categories`, `features/categories/`): add, rename (also renames on all its products) and delete (only when it has no products). Everything that needs a category list (product form, filters, POS chips) reads `categories` from `useData()`.
+Product categories are NOT hard-coded. The owner manages them on the Categories screen (`/categories`, `features/categories/`): add, rename (also renames on all its products) and delete (only when it has no products). Everything that needs a category list (product form, filters, POS chips) reads it with `useCategories()`.
 
 ## Money model
 

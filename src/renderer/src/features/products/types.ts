@@ -1,4 +1,10 @@
-export type PartQuality = 'original' | 'oem' | 'copy' | 'refurbished'
+import type { PartQuality } from '@shared/products/constants'
+import type { Product } from '@shared/products/types'
+
+// The product type comes from src/shared (the Drizzle table is the single source).
+export type { Product } from '@shared/products/types'
+export type { PartQuality } from '@shared/products/constants'
+export { PRODUCT_UNIT } from '@shared/products/constants'
 
 export const qualityLabels: Record<PartQuality, string> = {
   original: 'Original',
@@ -15,41 +21,72 @@ export const qualityShortLabels: Record<PartQuality, string> = {
   refurbished: 'Refurbished'
 }
 
-export const warrantyOptions = [
-  'No warranty',
-  '7 days',
-  '15 days',
-  '1 month',
-  '3 months',
-  '6 months',
-  '1 year'
-] as const
-
-export const unitOptions = ['pcs', 'set', 'pair', 'box', 'kit'] as const
-
-export type Product = {
-  id: string
-  name: string
-  sku: string
-  barcode: string
-  category: string
-  brand: string // e.g. Samsung, Apple, Xiaomi
-  compatibleModels: string // e.g. "Galaxy A12, A125F"
-  quality?: PartQuality // not asked when adding a product; shown only when set
-  color: string
-  warranty: string
-  shelf: string // where it is kept in the shop
-  unit: string
-  costPrice: number // what you paid
-  salePrice: number // the usual selling price. It fills in at the till, and can be changed for each sale
-  stock: number
-  reorderLevel: number
-}
-
 export type StockLevel = 'out' | 'low' | 'ok'
 
-export function getStockLevel(product: Product): StockLevel {
+export function getStockLevel(product: Pick<Product, 'stock' | 'reorderLevel'>): StockLevel {
   if (product.stock <= 0) return 'out'
   if (product.stock <= product.reorderLevel) return 'low'
   return 'ok'
 }
+
+export type ProductsResult = {
+  products: Product[]
+  isLoading: boolean
+}
+
+export type ProductDraftValues = {
+  name: string
+  category: string
+  brand: string
+  costPrice: number
+  salePrice: number | null
+  quantity: number
+  reorderLevel: number
+  shelf: string
+}
+
+export type ProductDraft = {
+  values: ProductDraftValues
+  onSave: (values: ProductDraftValues) => void
+  onUseExisting?: () => void
+}
+
+export type ProductFormDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  product?: Product
+  onSaved?: (product: Product) => void
+  stockFromBill?: boolean
+  draft?: ProductDraft
+}
+
+export type ProductFormProps = {
+  product?: Product
+  onSaved?: (product: Product) => void
+  stockFromBill?: boolean
+  draft?: ProductDraft
+  onDone: () => void
+}
+
+export type AddStockDialogProps = {
+  product: Product | null
+  onOpenChange: (open: boolean) => void
+}
+
+export type AddStockFormProps = {
+  product: Product
+  onDone: () => void
+}
+
+export type ProductFormFields = {
+  name: string
+  category: string
+  brand: string
+  costPrice: string
+  salePrice: string
+  stock: string
+  reorderLevel: string
+  shelf: string
+}
+
+export type ProductFormErrors = Record<string, string>

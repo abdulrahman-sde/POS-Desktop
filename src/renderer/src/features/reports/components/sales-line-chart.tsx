@@ -10,7 +10,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { formatCurrency } from '@/lib/format'
+import { formatCurrency, formatShortDate, formatWeekdayDate } from '@/lib/format'
 import { useElementWidth } from '../hooks/use-element-width'
 
 type Day = { date: Date; total: number; orders: number }
@@ -30,8 +30,7 @@ function compact(value: number): string {
   return value >= 1000 ? `${Math.round((value / 1000) * 10) / 10}k` : String(value)
 }
 
-const shortDate = (date: Date): string =>
-  date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+const shortDate = formatShortDate
 
 // One line: sales per day. One series, so no legend; the card title names it.
 // Colours come from design tokens (the line is --primary). The Table tab shows the same
@@ -205,13 +204,7 @@ function LineChart({ days }: { days: Day[] }): React.JSX.Element {
             transform: 'translateX(-50%)'
           }}
         >
-          <span className="text-muted-foreground">
-            {activeDay.date.toLocaleDateString('en-GB', {
-              weekday: 'short',
-              day: 'numeric',
-              month: 'short'
-            })}
-          </span>
+          <span className="text-muted-foreground">{formatWeekdayDate(activeDay.date)}</span>
           <span className="flex items-center gap-1.5 text-sm">
             <span className="h-0.5 w-3 rounded-full bg-primary" />
             {formatCurrency(activeDay.total)}
@@ -238,13 +231,7 @@ function DaysTable({ days }: { days: Day[] }): React.JSX.Element {
       <TableBody>
         {[...days].reverse().map((day) => (
           <TableRow key={day.date.toISOString()}>
-            <TableCell>
-              {day.date.toLocaleDateString('en-GB', {
-                weekday: 'short',
-                day: 'numeric',
-                month: 'short'
-              })}
-            </TableCell>
+            <TableCell>{formatWeekdayDate(day.date)}</TableCell>
             <TableCell className="text-right text-muted-foreground">{day.orders}</TableCell>
             <TableCell className="text-right">{formatCurrency(day.total)}</TableCell>
           </TableRow>
