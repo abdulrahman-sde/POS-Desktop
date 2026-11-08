@@ -28,7 +28,7 @@ Electron + React 19 + TypeScript desktop POS/accounting app (electron-vite, Tail
 - `components/layout/`: app shell (sidebar, layout, nav config).
 - `components/shared/`: components used by MORE THAN ONE module (page-header, stat-card, empty-state, form-field, option-select, search-field, status badges, record-payment-dialog, whatsapp-button...). If something is used by only one feature, it belongs in that feature instead.
 - `features/<name>/`: one folder per feature (products, categories, customers, sales, invoices, payments, reports, settings, dashboard). Inside: `api/` (calls and query keys), `components/` (feature-only UI), `hooks/` (feature hooks), `types.ts`, `constants.ts`, `utils.ts`. No pages here.
-- `app/`: `router.tsx`, `pages/` (thin route screens that compose feature and shared components), `providers/` (temporary in-memory data provider, query client wiring is in `App.tsx`).
+- `app/`: `router.tsx`, `pages/` (thin route screens that compose feature and shared components), `providers/` (the Buy Stock draft and the invoice viewer; the query client is wired in `App.tsx`).
 - `lib/`: pure helpers (format, whatsapp). `hooks/`: hooks shared across features.
 
 ## Data and backend
@@ -44,7 +44,7 @@ One feature goes through these layers, in order:
 
 Nothing is ever really deleted. A delete sets `deletedAt` on the row (customers, suppliers, categories): lists hide it, old invoices, bills and payments still show its name (use `allCustomers`-style lookups for names), and the same name can be used again (partial unique index `where deleted_at is null`). A customer who still owes money cannot be deleted (the backend works it out from orders and payments); a supplier you still owe cannot be deleted either (the backend works it out from bills and payments); a category only when it has no products.
 
-Components never fetch or save directly. Done so far: categories, products, customers, suppliers, sales (orders and their items), customer payments, purchases (supplier bills) and supplier payments. Only the shop settings still use the temporary in-memory `useData()` (it resets when the app closes) until a settings module is built. The Backup button still downloads a JSON of the screens' data; it will become a copy of the database file.
+Components never fetch or save directly. Every module is in the database: categories, products, customers, suppliers, sales (orders and their items), customer payments, purchases (supplier bills), supplier payments and shop settings. The old in-memory `useData()` provider is gone. Shop settings are one row in the `settings` table (defaults come from `shared/settings/constants.ts` until the owner saves).
 
 ## Code style
 
@@ -131,7 +131,7 @@ One line per invoice (Bill, and the money received when buying on the SAME line)
 
 ## Backup
 
-A **Backup** button sits at the far right of the top bar (`components/layout/app-layout.tsx`) and on the Settings page. Both use the shared `hooks/use-backup.ts`.
+A **Backup** button sits at the far right of the top bar (`components/layout/app-layout.tsx`) and on the Settings page. Both use the shared `hooks/use-backup.ts`. It opens the computer's Save window (`main/backup/backup.ipc.ts`) and copies the whole database with SQLite's own backup function, which gives a consistent `.db` file even while the app is running. Bringing a saved copy back is not built yet (the button is disabled).
 
 ## Categories
 

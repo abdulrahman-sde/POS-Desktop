@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { AngleLeft, Edit, Receipt, TickCircle, Trash, Users, Wallet } from 'reicon-react'
 import { Link, useNavigate, useParams } from 'react-router'
 
-import { useData } from '@/app/providers/data-context'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { useOrders } from '@/features/sales/hooks/use-orders'
@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils'
 
 export function CustomerDetailPage(): React.JSX.Element {
   const { id } = useParams()
-  const { settings } = useData()
+  const { settings } = useSettings()
   const { payments } = usePayments()
   const { orders } = useOrders()
   const invoices = useInvoices()

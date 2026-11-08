@@ -32,9 +32,7 @@
       "indexes": {
         "categories_name_unique": {
           "name": "categories_name_unique",
-          "columns": [
-            "lower(\"name\")"
-          ],
+          "columns": ["lower(\"name\")"],
           "isUnique": true,
           "where": "\"categories\".\"deleted_at\" is null"
         }
@@ -201,16 +199,12 @@
       "indexes": {
         "products_item_code_unique": {
           "name": "products_item_code_unique",
-          "columns": [
-            "item_code"
-          ],
+          "columns": ["item_code"],
           "isUnique": true
         },
         "products_name_unique": {
           "name": "products_name_unique",
-          "columns": [
-            "lower(\"name\")"
-          ],
+          "columns": ["lower(\"name\")"],
           "isUnique": true
         }
       },
@@ -219,12 +213,8 @@
           "name": "products_category_id_categories_id_fk",
           "tableFrom": "products",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -305,9 +295,7 @@
       "indexes": {
         "suppliers_name_unique": {
           "name": "suppliers_name_unique",
-          "columns": [
-            "lower(\"name\")"
-          ],
+          "columns": ["lower(\"name\")"],
           "isUnique": true,
           "where": "\"suppliers\".\"deleted_at\" is null"
         }

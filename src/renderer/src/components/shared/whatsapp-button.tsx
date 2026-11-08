@@ -1,7 +1,7 @@
 import { Chat } from 'reicon-react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 import { Button } from '@/components/ui/button'
 import { openWhatsApp, toWhatsAppNumber } from '@/lib/whatsapp'
 
@@ -18,7 +18,7 @@ export function WhatsAppButton({
   label = 'Send on WhatsApp',
   variant = 'success'
 }: WhatsAppButtonProps): React.JSX.Element {
-  const { settings } = useData()
+  const { settings } = useSettings()
   const hasNumber = Boolean(phone && toWhatsAppNumber(phone, settings.countryCode))
 
   return (

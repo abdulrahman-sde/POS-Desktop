@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Printer, Wallet } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { useOrders } from '@/features/sales/hooks/use-orders'
@@ -45,7 +45,7 @@ function InvoiceBody({
   orderId: string
   onClose: () => void
 }): React.JSX.Element {
-  const { settings } = useData()
+  const { settings } = useSettings()
   const { payments } = usePayments()
   const { orders } = useOrders()
   const invoices = useInvoices()

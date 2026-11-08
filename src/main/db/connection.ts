@@ -26,6 +26,11 @@ export function initDb(filePath: string, migrationsFolder: string): Db {
   return db
 }
 
+export function backupDatabase(destination: string): Promise<unknown> {
+  if (!sqlite) throw new Error('The database is not open yet.')
+  return sqlite.backup(destination)
+}
+
 export function getDb(): Db {
   if (!db) throw new Error('The database is not open yet.')
   return db
