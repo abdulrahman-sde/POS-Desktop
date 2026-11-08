@@ -3,6 +3,7 @@ import { AngleLeft, Edit, Receipt, TickCircle, Trash, Users, Wallet } from 'reic
 import { Link, useNavigate, useParams } from 'react-router'
 
 import { useSettings } from '@/features/settings/hooks/use-settings'
+import { SHOW_DELETE_BUTTONS } from '@/lib/features'
 import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { useOrders } from '@/features/sales/hooks/use-orders'
@@ -95,17 +96,21 @@ export function CustomerDetailPage(): React.JSX.Element {
               <Edit data-icon="inline-start" />
               Edit
             </Button>
-            <Button
-              variant="outline"
-              disabled={owed > 0}
-              title={
-                owed > 0 ? 'This customer still owes you money. Receive payment first.' : undefined
-              }
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash data-icon="inline-start" />
-              Delete
-            </Button>
+            {SHOW_DELETE_BUTTONS ? (
+              <Button
+                variant="outline"
+                disabled={owed > 0}
+                title={
+                  owed > 0
+                    ? 'This customer still owes you money. Receive payment first.'
+                    : undefined
+                }
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash data-icon="inline-start" />
+                Delete
+              </Button>
+            ) : null}
           </>
         }
       />

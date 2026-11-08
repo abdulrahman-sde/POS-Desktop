@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 
 import { EmptyState } from '@/components/shared/empty-state'
+import { SHOW_DELETE_BUTTONS } from '@/lib/features'
 import { Badge } from '@/components/ui/badge'
 import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
@@ -86,20 +87,22 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.El
                     >
                       <Edit />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`Delete ${category.name}`}
-                      disabled={productCount > 0}
-                      title={
-                        productCount > 0
-                          ? 'Move its products to another category first'
-                          : 'Delete this category'
-                      }
-                      onClick={() => setDeleting(category)}
-                    >
-                      <Trash />
-                    </Button>
+                    {SHOW_DELETE_BUTTONS ? (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Delete ${category.name}`}
+                        disabled={productCount > 0}
+                        title={
+                          productCount > 0
+                            ? 'Move its products to another category first'
+                            : 'Delete this category'
+                        }
+                        onClick={() => setDeleting(category)}
+                      >
+                        <Trash />
+                      </Button>
+                    ) : null}
                   </div>
                 </TableCell>
               </TableRow>

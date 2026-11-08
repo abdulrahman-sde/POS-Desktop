@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Edit, Shop, Trash } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
+import { SHOW_DELETE_BUTTONS } from '@/lib/features'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -82,20 +83,22 @@ export function SuppliersTable({ rows }: { rows: SupplierRow[] }): React.JSX.Ele
                       >
                         <Edit />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Delete ${supplier.name}`}
-                        disabled={owed > 0}
-                        title={
-                          owed > 0
-                            ? 'You still owe this supplier money. Pay them first.'
-                            : 'Delete this supplier'
-                        }
-                        onClick={() => setDeleting(supplier)}
-                      >
-                        <Trash />
-                      </Button>
+                      {SHOW_DELETE_BUTTONS ? (
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Delete ${supplier.name}`}
+                          disabled={owed > 0}
+                          title={
+                            owed > 0
+                              ? 'You still owe this supplier money. Pay them first.'
+                              : 'Delete this supplier'
+                          }
+                          onClick={() => setDeleting(supplier)}
+                        >
+                          <Trash />
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>

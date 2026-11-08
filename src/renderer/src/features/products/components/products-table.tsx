@@ -1,6 +1,7 @@
 import { Add, Box, Edit, Trash } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
+import { SHOW_DELETE_BUTTONS } from '@/lib/features'
 import { StockBadge } from '@/components/shared/stock-badge'
 import { CategoryChip } from '@/components/shared/category-chip'
 import { Button } from '@/components/ui/button'
@@ -81,14 +82,16 @@ export function ProductsTable({
                     >
                       <Edit />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`Delete ${product.name}`}
-                      onClick={() => onDelete(product)}
-                    >
-                      <Trash />
-                    </Button>
+                    {SHOW_DELETE_BUTTONS ? (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Delete ${product.name}`}
+                        onClick={() => onDelete(product)}
+                      >
+                        <Trash />
+                      </Button>
+                    ) : null}
                   </div>
                 </TableCell>
               </TableRow>
