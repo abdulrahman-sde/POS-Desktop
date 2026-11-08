@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { productKeys } from '@/features/products/api/products.keys'
+import { deletedKeys } from '@/features/deleted/api/deleted.keys'
 import { useApiMutation } from '@/lib/use-api'
 import { categoriesApi } from '../api/categories.api'
 import { categoryKeys } from '../api/categories.keys'
@@ -34,6 +35,7 @@ export function useDeleteCategory() {
   return useApiMutation((category: Category) => categoriesApi.remove(category.id), {
     onSuccess: (_data, category) => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all })
+      queryClient.invalidateQueries({ queryKey: deletedKeys.all })
       toast.success(`${category.name} deleted`)
     }
   })

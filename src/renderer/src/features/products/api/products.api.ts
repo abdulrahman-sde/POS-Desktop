@@ -7,5 +7,6 @@ export const productsApi = {
   list: () => window.api.products.list(),
   add: (input: AddProductInput) => window.api.products.add(input),
   update: (input: UpdateProductInput) => window.api.products.update(input),
+  remove: (id: string) => window.api.products.remove(id),
   addStock: (input: AddStockInput) => window.api.products.addStock(input)
 }

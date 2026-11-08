@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, sql } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm'
 
 import { suppliers } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -35,3 +35,21 @@ export const updateSupplierRow = (
 
 export const softDeleteSupplier = (db: DbOrTx, id: string, deletedAt: string) =>
   db.update(suppliers).set({ deletedAt }).where(eq(suppliers.id, id)).run()
+
+export const listDeletedSuppliers = (db: DbOrTx) =>
+  db
+    .select()
+    .from(suppliers)
+    .where(isNotNull(suppliers.deletedAt))
+    .orderBy(desc(suppliers.deletedAt))
+    .all()
+
+export const findDeletedSupplierById = (db: DbOrTx, id: string) =>
+  db
+    .select()
+    .from(suppliers)
+    .where(and(eq(suppliers.id, id), isNotNull(suppliers.deletedAt)))
+    .get()
+
+export const restoreSupplierRow = (db: DbOrTx, id: string) =>
+  db.update(suppliers).set({ deletedAt: null }).where(eq(suppliers.id, id)).run()

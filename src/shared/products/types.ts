@@ -7,7 +7,7 @@ import type { addProductSchema, addStockSchema, updateProductSchema } from './sc
 export type ProductRow = typeof products.$inferSelect
 
 // A product as the screens use it: the row plus the category NAME, looked up from categoryId.
-export type Product = ProductRow & { category: string }
+export type Product = Omit<ProductRow, 'deletedAt'> & { category: string }
 
 export type AddProductInput = z.infer<typeof addProductSchema>
 export type UpdateProductInput = z.infer<typeof updateProductSchema>

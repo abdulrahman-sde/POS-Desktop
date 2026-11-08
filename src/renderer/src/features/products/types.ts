@@ -90,3 +90,16 @@ export type ProductFormFields = {
 }
 
 export type ProductFormErrors = Record<string, string>
+
+export type ProductsTableProps = {
+  products: Product[]
+  onEdit: (product: Product) => void
+  onAddStock: (product: Product) => void
+  onDelete: (product: Product) => void
+}
+
+export type ProductDeleteDialogProps = {
+  product: Product
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}

@@ -40,3 +40,15 @@ export function deleteCategory(id: string): void {
   }
   q.softDeleteCategory(db, id, new Date().toISOString())
 }
+
+export function restoreCategory(id: string): void {
+  const db = getDb()
+  const category = q.findDeletedCategoryById(db, id)
+  if (!category) throw new UserError('This category is not in the deleted list.')
+  if (q.findCategoryByName(db, category.name)) {
+    throw new UserError(
+      'You already have a category with this name, so this one cannot be brought back.'
+    )
+  }
+  q.restoreCategoryRow(db, id)
+}

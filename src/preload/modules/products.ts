@@ -12,5 +12,6 @@ export const productsPreload = {
   list: () => call<Product[]>('products:list'),
   add: (input: AddProductInput) => call<Product>('products:add', input),
   update: (input: UpdateProductInput) => call<Product>('products:update', input),
+  remove: (id: string) => call<void>('products:remove', { id }),
   addStock: (input: AddStockInput) => call<Product>('products:addStock', input)
 }

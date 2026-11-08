@@ -53,3 +53,15 @@ export function deleteSupplier(id: string): void {
   }
   q.softDeleteSupplier(db, id, new Date().toISOString())
 }
+
+export function restoreSupplier(id: string): void {
+  const db = getDb()
+  const supplier = q.findDeletedSupplierById(db, id)
+  if (!supplier) throw new UserError('This supplier is not in the deleted list.')
+  if (q.findActiveSupplierByName(db, supplier.name)) {
+    throw new UserError(
+      'You already have a supplier with this name, so this one cannot be brought back.'
+    )
+  }
+  q.restoreSupplierRow(db, id)
+}

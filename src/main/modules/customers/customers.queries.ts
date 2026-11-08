@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, sql } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm'
 
 import { customers } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -28,3 +28,21 @@ export const updateCustomerRow = (
 
 export const softDeleteCustomer = (db: DbOrTx, id: string, deletedAt: string) =>
   db.update(customers).set({ deletedAt }).where(eq(customers.id, id)).run()
+
+export const listDeletedCustomers = (db: DbOrTx) =>
+  db
+    .select()
+    .from(customers)
+    .where(isNotNull(customers.deletedAt))
+    .orderBy(desc(customers.deletedAt))
+    .all()
+
+export const findDeletedCustomerById = (db: DbOrTx, id: string) =>
+  db
+    .select()
+    .from(customers)
+    .where(and(eq(customers.id, id), isNotNull(customers.deletedAt)))
+    .get()
+
+export const restoreCustomerRow = (db: DbOrTx, id: string) =>
+  db.update(customers).set({ deletedAt: null }).where(eq(customers.id, id)).run()

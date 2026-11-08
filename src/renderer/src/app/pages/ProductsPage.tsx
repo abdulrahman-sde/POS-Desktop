@@ -9,6 +9,7 @@ import { StatCard } from '@/components/shared/stat-card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AddStockDialog } from '@/features/products/components/add-stock-dialog'
+import { ProductDeleteDialog } from '@/features/products/components/product-delete-dialog'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
 import { ProductsTable } from '@/features/products/components/products-table'
 import { useProducts } from '@/features/products/hooks/use-products'
@@ -23,6 +24,7 @@ export function ProductsPage(): React.JSX.Element {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | undefined>()
   const [stockTarget, setStockTarget] = useState<Product | null>(null)
+  const [deleting, setDeleting] = useState<Product | null>(null)
 
   const lowCount = products.filter((p) => getStockLevel(p) === 'low').length
   const outCount = products.filter((p) => getStockLevel(p) === 'out').length
@@ -103,9 +105,21 @@ export function ProductsPage(): React.JSX.Element {
         </Tabs>
       </div>
 
-      <ProductsTable products={filters.filtered} onEdit={openForm} onAddStock={setStockTarget} />
+      <ProductsTable
+        products={filters.filtered}
+        onEdit={openForm}
+        onAddStock={setStockTarget}
+        onDelete={setDeleting}
+      />
 
       <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />
+      {deleting ? (
+        <ProductDeleteDialog
+          product={deleting}
+          open
+          onOpenChange={(open) => !open && setDeleting(null)}
+        />
+      ) : null}
       <AddStockDialog
         product={stockTarget}
         onOpenChange={(open) => !open && setStockTarget(null)}

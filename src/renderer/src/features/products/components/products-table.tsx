@@ -1,4 +1,4 @@
-import { Add, Box, Edit } from 'reicon-react'
+import { Add, Box, Edit, Trash } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
 import { StockBadge } from '@/components/shared/stock-badge'
@@ -14,18 +14,13 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/format'
-import { PRODUCT_UNIT, type Product } from '../types'
-
-type ProductsTableProps = {
-  products: Product[]
-  onEdit: (product: Product) => void
-  onAddStock: (product: Product) => void
-}
+import { PRODUCT_UNIT, type ProductsTableProps } from '../types'
 
 export function ProductsTable({
   products,
   onEdit,
-  onAddStock
+  onAddStock,
+  onDelete
 }: ProductsTableProps): React.JSX.Element {
   return (
     <Card className="gap-0 px-3 py-1">
@@ -85,6 +80,14 @@ export function ProductsTable({
                       onClick={() => onEdit(product)}
                     >
                       <Edit />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Delete ${product.name}`}
+                      onClick={() => onDelete(product)}
+                    >
+                      <Trash />
                     </Button>
                   </div>
                 </TableCell>

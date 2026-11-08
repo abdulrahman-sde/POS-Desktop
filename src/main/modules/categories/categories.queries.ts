@@ -1,4 +1,4 @@
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm'
 
 import { categories, products } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -41,5 +41,23 @@ export const countProductsInCategory = (db: DbOrTx, id: string) =>
   db
     .select({ n: sql<number>`count(*)` })
     .from(products)
-    .where(eq(products.categoryId, id))
+    .where(and(eq(products.categoryId, id), isNull(products.deletedAt)))
     .get()?.n ?? 0
+
+export const listDeletedCategories = (db: DbOrTx) =>
+  db
+    .select()
+    .from(categories)
+    .where(isNotNull(categories.deletedAt))
+    .orderBy(desc(categories.deletedAt))
+    .all()
+
+export const findDeletedCategoryById = (db: DbOrTx, id: string) =>
+  db
+    .select()
+    .from(categories)
+    .where(and(eq(categories.id, id), isNotNull(categories.deletedAt)))
+    .get()
+
+export const restoreCategoryRow = (db: DbOrTx, id: string) =>
+  db.update(categories).set({ deletedAt: null }).where(eq(categories.id, id)).run()

@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNotNull, isNull, sql } from 'drizzle-orm'
 
 import { categories, products } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -28,6 +28,7 @@ export const listProducts = (db: DbOrTx) =>
     .select(withCategory)
     .from(products)
     .innerJoin(categories, eq(products.categoryId, categories.id))
+    .where(isNull(products.deletedAt))
     .orderBy(desc(sql`${products}.rowid`))
     .all()
 
@@ -36,14 +37,14 @@ export const findProductById = (db: DbOrTx, id: string) =>
     .select(withCategory)
     .from(products)
     .innerJoin(categories, eq(products.categoryId, categories.id))
-    .where(eq(products.id, id))
+    .where(and(eq(products.id, id), isNull(products.deletedAt)))
     .get()
 
 export const findProductByName = (db: DbOrTx, name: string) =>
   db
     .select({ id: products.id })
     .from(products)
-    .where(sql`lower(${products.name}) = lower(${name})`)
+    .where(and(sql`lower(${products.name}) = lower(${name})`, isNull(products.deletedAt)))
     .get()
 
 // The biggest number used in an item code so far (ITM-0007 gives 7).
@@ -75,3 +76,37 @@ export const decreaseStock = (db: DbOrTx, id: string, qty: number) =>
     .set({ stock: sql`${products.stock} - ${qty}` })
     .where(and(eq(products.id, id), gte(products.stock, qty)))
     .run().changes
+
+export const softDeleteProduct = (db: DbOrTx, id: string, deletedAt: string) =>
+  db.update(products).set({ deletedAt }).where(eq(products.id, id)).run()
+
+export const restoreProductRow = (db: DbOrTx, id: string) =>
+  db.update(products).set({ deletedAt: null }).where(eq(products.id, id)).run()
+
+export const listDeletedProducts = (db: DbOrTx) =>
+  db
+    .select({
+      id: products.id,
+      name: products.name,
+      itemCode: products.itemCode,
+      category: categories.name,
+      deletedAt: products.deletedAt
+    })
+    .from(products)
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .where(isNotNull(products.deletedAt))
+    .orderBy(desc(products.deletedAt))
+    .all()
+
+export const findDeletedProductById = (db: DbOrTx, id: string) =>
+  db
+    .select({
+      id: products.id,
+      name: products.name,
+      category: categories.name,
+      categoryDeletedAt: categories.deletedAt
+    })
+    .from(products)
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .where(and(eq(products.id, id), isNotNull(products.deletedAt)))
+    .get()

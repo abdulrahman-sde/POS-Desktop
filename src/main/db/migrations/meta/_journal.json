@@ -57,6 +57,13 @@
       "when": 1794166340818,
       "tag": "0007_create_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794166930970,
+      "tag": "0008_soft_delete_products",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import { backupPreload } from './modules/backup'
 import { categoriesPreload } from './modules/categories'
 import { customersPreload } from './modules/customers'
+import { deletedPreload } from './modules/deleted'
 import { paymentsPreload } from './modules/payments'
 import { productsPreload } from './modules/products'
 import { purchasesPreload } from './modules/purchases'
@@ -18,6 +19,7 @@ export const api = {
   backup: backupPreload,
   categories: categoriesPreload,
   customers: customersPreload,
+  deleted: deletedPreload,
   payments: paymentsPreload,
   products: productsPreload,
   purchases: purchasesPreload,

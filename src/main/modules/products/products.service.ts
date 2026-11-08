@@ -76,3 +76,28 @@ export function addStock(input: AddStockInput): Product {
     return q.findProductById(tx, input.id)!
   })
 }
+
+export function deleteProduct(id: string): void {
+  return getDb().transaction((tx) => {
+    if (!q.findProductById(tx, id)) throw new UserError('This product no longer exists.')
+    q.softDeleteProduct(tx, id, new Date().toISOString())
+  })
+}
+
+export function restoreProduct(id: string): void {
+  getDb().transaction((tx) => {
+    const product = q.findDeletedProductById(tx, id)
+    if (!product) throw new UserError('This product is not in the deleted list.')
+    if (product.categoryDeletedAt) {
+      throw new UserError(
+        `Its category "${product.category}" was deleted. Bring the category back first.`
+      )
+    }
+    if (q.findProductByName(tx, product.name)) {
+      throw new UserError(
+        'You already have a product with this name, so this one cannot be brought back.'
+      )
+    }
+    q.restoreProductRow(tx, id)
+  })
+}

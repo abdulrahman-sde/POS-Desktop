@@ -1,6 +1,7 @@
 import { registerBackupIpc } from '../backup/backup.ipc'
 import { registerCategoriesIpc } from './categories/categories.ipc'
 import { registerCustomersIpc } from './customers/customers.ipc'
+import { registerDeletedIpc } from './deleted/deleted.ipc'
 import { registerPaymentsIpc } from './payments/payments.ipc'
 import { registerProductsIpc } from './products/products.ipc'
 import { registerPurchasesIpc } from './purchases/purchases.ipc'
@@ -12,6 +13,7 @@ export function registerAllIpc(): void {
   registerBackupIpc()
   registerCategoriesIpc()
   registerCustomersIpc()
+  registerDeletedIpc()
   registerPaymentsIpc()
   registerProductsIpc()
   registerPurchasesIpc()

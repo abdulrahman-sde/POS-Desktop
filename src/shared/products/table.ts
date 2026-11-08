@@ -23,11 +23,14 @@ export const products = sqliteTable(
     salePrice: integer('sale_price').notNull(),
     stock: integer('stock').notNull().default(0),
     reorderLevel: integer('reorder_level').notNull().default(5),
-    createdAt: text('created_at').notNull()
+    createdAt: text('created_at').notNull(),
+    deletedAt: text('deleted_at')
   },
   (t) => [
     // Two products cannot share a name, even if the capital letters differ (the invoice import matches by name).
-    uniqueIndex('products_name_unique').on(sql`lower(${t.name})`),
+    uniqueIndex('products_name_unique')
+      .on(sql`lower(${t.name})`)
+      .where(sql`${t.deletedAt} is null`),
     // The database itself refuses nonsense, as a last line of defence.
     check('products_cost_price_positive', sql`${t.costPrice} > 0`),
     check('products_sale_price_positive', sql`${t.salePrice} > 0`),

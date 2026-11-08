@@ -68,7 +68,10 @@ export function findNavItem(pathname: string): NavItem | undefined {
 
 // "/customers/c1" counts as being on "/customers".
 // Pages that are not in the sidebar but belong to a sidebar item.
-const relatedPaths: Record<string, string[]> = { '/stock/new': ['/stock/import'] }
+const relatedPaths: Record<string, string[]> = {
+  '/stock/new': ['/stock/import'],
+  '/settings': ['/deleted']
+}
 
 export function isNavActive(itemPath: string, pathname: string): boolean {
   if (itemPath === '/') return pathname === '/'

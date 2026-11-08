@@ -1,5 +1,6 @@
 import { PageHeader } from '@/components/shared/page-header'
 import { BackupCard } from '@/features/settings/components/backup-card'
+import { DeletedRecordsCard } from '@/features/settings/components/deleted-records-card'
 import { ShopSettingsForm } from '@/features/settings/components/shop-settings-form'
 
 export function SettingsPage(): React.JSX.Element {
@@ -7,11 +8,12 @@ export function SettingsPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Settings"
-        description="Your shop details and saving a copy of your data."
+        description="Your shop details, saving a copy of your data, and deleted records."
       />
       <div className="flex max-w-3xl flex-col gap-4">
         <ShopSettingsForm />
         <BackupCard />
+        <DeletedRecordsCard />
       </div>
     </>
   )

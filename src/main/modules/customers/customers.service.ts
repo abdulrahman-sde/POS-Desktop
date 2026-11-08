@@ -46,3 +46,10 @@ export function deleteCustomer(id: string): void {
   }
   q.softDeleteCustomer(db, id, new Date().toISOString())
 }
+
+export function restoreCustomer(id: string): void {
+  const db = getDb()
+  if (!q.findDeletedCustomerById(db, id))
+    throw new UserError('This customer is not in the deleted list.')
+  q.restoreCustomerRow(db, id)
+}
