@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
-import { useData } from '@/app/providers/data-context'
 import { useInvoiceViewer } from '@/app/providers/invoice-viewer-context'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -10,24 +9,30 @@ import { plural } from '@/lib/format'
 import { PosCartLines } from '@/features/sales/components/pos-cart-lines'
 import { PosCheckout } from '@/features/sales/components/pos-checkout'
 import { PosProductPicker } from '@/features/sales/components/pos-product-picker'
+import { useCreateOrder } from '@/features/sales/hooks/use-order-mutations'
 import { usePosCart } from '@/features/sales/hooks/use-pos-cart'
 
 export function NewSalePage(): React.JSX.Element {
   const cart = usePosCart()
-  const { createOrder } = useData()
+  const createOrder = useCreateOrder()
   const { openInvoice } = useInvoiceViewer()
   const searchRef = useRef<HTMLInputElement>(null)
   const submitRef = useRef<() => void>(() => {})
 
-  const submit = (): void => {
+  const submit = async (): Promise<void> => {
+    if (createOrder.isPending) return
     if (cart.problem) {
       toast.error(cart.problem)
       return
     }
-    const order = createOrder(cart.buildOrder())
-    cart.reset()
-    toast.success(`Invoice ${order.invoiceNo} created`)
-    openInvoice(order.id)
+    try {
+      const order = await createOrder.mutateAsync(cart.buildOrder())
+      cart.reset()
+      toast.success(`Invoice ${order.invoiceNo} created`)
+      openInvoice(order.id)
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
   }
 
   useEffect(() => {

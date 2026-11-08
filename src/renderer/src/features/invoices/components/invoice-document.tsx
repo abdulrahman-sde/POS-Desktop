@@ -1,4 +1,5 @@
 import type { Customer } from '@/features/customers/types'
+import { PRODUCT_UNIT } from '@/features/products/types'
 import { paymentMethodLabels, type InvoiceSummary, type Order } from '@/features/sales/types'
 import { itemsSubtotal } from '@/features/sales/utils'
 import type { ShopSettings } from '@/features/settings/types'
@@ -62,7 +63,7 @@ export function InvoiceDocument({
             <TableRow key={item.productId}>
               <TableCell className="whitespace-normal">{item.name}</TableCell>
               <TableCell className="text-right">
-                {item.qty} {item.unit}
+                {item.qty} {PRODUCT_UNIT}
               </TableCell>
               <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
               <TableCell className="text-right">

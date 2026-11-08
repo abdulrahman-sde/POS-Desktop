@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
 
-import { useData, type NewOrderInput } from '@/app/providers/data-context'
+import type { NewOrderInput } from '@shared/sales/types'
+import { useData } from '@/app/providers/data-context'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useProducts } from '@/features/products/hooks/use-products'
-import { PRODUCT_UNIT, type Product } from '@/features/products/types'
+import type { Product } from '@/features/products/types'
 import { toNumber } from '@/lib/format'
 import type { OrderItem, PaymentMethod } from '../types'
 import { customerBalance, itemsSubtotal } from '../utils'
+import { useOrders } from './use-orders'
 
 export const WALK_IN = 'walk-in'
 
@@ -17,7 +19,8 @@ type CartLine = { productId: string; qty: number; unitPrice: number }
 // All the state and rules of the sale screen: cart lines, customer, discount, advance.
 export function usePosCart() {
   const { products } = useProducts()
-  const { orders, payments } = useData()
+  const { payments } = useData()
+  const { orders } = useOrders()
   const { customers } = useCustomers()
   const [lines, setLines] = useState<CartLine[]>([])
   const [customerId, setCustomerId] = useState(WALK_IN)
@@ -35,7 +38,6 @@ export function usePosCart() {
               {
                 productId: product.id,
                 name: product.name,
-                unit: PRODUCT_UNIT,
                 qty: line.qty,
                 unitPrice: line.unitPrice,
                 costPrice: product.costPrice
@@ -118,7 +120,7 @@ export function usePosCart() {
 
   const buildOrder = (): NewOrderInput => ({
     customerId: isWalkIn ? null : customerId,
-    items,
+    items: items.map(({ productId, qty, unitPrice }) => ({ productId, qty, unitPrice })),
     discount,
     advance,
     method,

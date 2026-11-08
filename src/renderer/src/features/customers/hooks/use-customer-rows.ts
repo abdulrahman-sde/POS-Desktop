@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 
 import { useData } from '@/app/providers/data-context'
+import { useOrders } from '@/features/sales/hooks/use-orders'
 import { customerBalance } from '@/features/sales/utils'
 import type { CustomerRow } from '../types'
 import { useCustomers } from './use-customers'
 
 export function useCustomerRows(): CustomerRow[] {
   const { customers } = useCustomers()
-  const { orders, payments } = useData()
+  const { payments } = useData()
+  const { orders } = useOrders()
 
   return useMemo(
     () =>

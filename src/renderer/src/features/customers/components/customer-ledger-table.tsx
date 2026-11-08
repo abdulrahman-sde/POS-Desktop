@@ -1,6 +1,6 @@
 import { Receipt } from 'reicon-react'
 
-import { useData } from '@/app/providers/data-context'
+import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { useInvoiceViewer } from '@/app/providers/invoice-viewer-context'
 import { BalanceAmount } from '@/components/shared/balance-amount'
 import { EmptyState } from '@/components/shared/empty-state'
@@ -20,7 +20,7 @@ import { formatCurrency, formatDate } from '@/lib/format'
 import type { LedgerEntry } from '../utils'
 
 export function CustomerLedgerTable({ entries }: { entries: LedgerEntry[] }): React.JSX.Element {
-  const { invoices } = useData()
+  const invoices = useInvoices()
   const { openInvoice } = useInvoiceViewer()
 
   return (

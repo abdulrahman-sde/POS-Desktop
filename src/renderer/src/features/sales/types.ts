@@ -1,4 +1,7 @@
-export type PaymentMethod = 'cash' | 'bank' | 'wallet'
+import type { PaymentMethod } from '@shared/sales/constants'
+import type { Order, OrderItemRow } from '@shared/sales/types'
+
+export type { Order, PaymentMethod }
 
 export const paymentMethodLabels: Record<PaymentMethod, string> = {
   cash: 'Cash',
@@ -6,25 +9,11 @@ export const paymentMethodLabels: Record<PaymentMethod, string> = {
   wallet: 'Mobile wallet'
 }
 
-export type OrderItem = {
-  productId: string
-  name: string
-  unit: string
-  qty: number
-  unitPrice: number // the price it was sold at
-  costPrice: number // what it cost you, saved so profit stays right later
-}
+export type OrderItem = Pick<OrderItemRow, 'productId' | 'name' | 'qty' | 'unitPrice' | 'costPrice'>
 
-export type Order = {
-  id: string
-  invoiceNo: string
-  customerId: string | null // null = walk-in customer
-  items: OrderItem[]
-  discount: number
-  advance: number // paid at the time of sale
-  method: PaymentMethod
-  note: string
-  createdAt: string
+export type OrdersResult = {
+  orders: Order[]
+  isLoading: boolean
 }
 
 export type InvoiceStatus = 'paid' | 'partial' | 'unpaid'

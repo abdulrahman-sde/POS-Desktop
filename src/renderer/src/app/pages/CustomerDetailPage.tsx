@@ -3,6 +3,8 @@ import { AngleLeft, Edit, Receipt, TickCircle, Trash, Users, Wallet } from 'reic
 import { Link, useNavigate, useParams } from 'react-router'
 
 import { useData } from '@/app/providers/data-context'
+import { useInvoices } from '@/features/sales/hooks/use-invoices'
+import { useOrders } from '@/features/sales/hooks/use-orders'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { BalanceAmount } from '@/components/shared/balance-amount'
 import { EmptyState } from '@/components/shared/empty-state'
@@ -22,7 +24,9 @@ import { cn } from '@/lib/utils'
 
 export function CustomerDetailPage(): React.JSX.Element {
   const { id } = useParams()
-  const { orders, payments, invoices, settings } = useData()
+  const { payments, settings } = useData()
+  const { orders } = useOrders()
+  const invoices = useInvoices()
   const { customers, isLoading } = useCustomers()
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)

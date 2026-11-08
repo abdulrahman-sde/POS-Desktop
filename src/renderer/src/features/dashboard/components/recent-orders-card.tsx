@@ -1,9 +1,9 @@
 import { Link } from 'react-router'
 
 import { InvoiceStatusBadge } from '@/components/shared/invoice-status-badge'
+import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useData } from '@/app/providers/data-context'
 import { useInvoiceViewer } from '@/app/providers/invoice-viewer-context'
 import { formatCurrency, formatDate } from '@/lib/format'
 import type { Order } from '@/features/sales/types'
@@ -11,7 +11,7 @@ import type { Order } from '@/features/sales/types'
 type Row = { order: Order; customerName: string; total: number }
 
 export function RecentOrdersCard({ rows }: { rows: Row[] }): React.JSX.Element {
-  const { invoices } = useData()
+  const invoices = useInvoices()
   const { openInvoice } = useInvoiceViewer()
 
   return (

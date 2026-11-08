@@ -4,6 +4,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import { categoriesPreload } from './modules/categories'
 import { customersPreload } from './modules/customers'
 import { productsPreload } from './modules/products'
+import { salesPreload } from './modules/sales'
 import { suppliersPreload } from './modules/suppliers'
 
 // Everything the screen may ask the backend to do. Add a line here when you add a module.
@@ -13,6 +14,7 @@ export const api = {
   categories: categoriesPreload,
   customers: customersPreload,
   products: productsPreload,
+  sales: salesPreload,
   suppliers: suppliersPreload
 }
 

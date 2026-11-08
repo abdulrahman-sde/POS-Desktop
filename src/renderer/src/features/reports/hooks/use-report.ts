@@ -1,13 +1,14 @@
 import { useMemo } from 'react'
 
-import { useData } from '@/app/providers/data-context'
+import { useOrders } from '@/features/sales/hooks/use-orders'
+import { PRODUCT_UNIT } from '@/features/products/types'
 import { orderTotal } from '@/features/sales/utils'
 import { isSameDay } from '@/lib/format'
 
 export type ReportRange = 7 | 30
 
 export function useReport(range: ReportRange) {
-  const { orders } = useData()
+  const { orders } = useOrders()
 
   return useMemo(() => {
     const start = new Date()
@@ -43,7 +44,7 @@ export function useReport(range: ReportRange) {
           name: item.name,
           qty: 0,
           revenue: 0,
-          unit: item.unit
+          unit: PRODUCT_UNIT
         }
         current.qty += item.qty
         current.revenue += item.qty * item.unitPrice

@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, sql } from 'drizzle-orm'
 
 import { categories, products } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
@@ -68,3 +68,10 @@ export const increaseStock = (db: DbOrTx, id: string, qty: number) =>
     .set({ stock: sql`${products.stock} + ${qty}` })
     .where(eq(products.id, id))
     .run()
+
+export const decreaseStock = (db: DbOrTx, id: string, qty: number) =>
+  db
+    .update(products)
+    .set({ stock: sql`${products.stock} - ${qty}` })
+    .where(and(eq(products.id, id), gte(products.stock, qty)))
+    .run().changes
