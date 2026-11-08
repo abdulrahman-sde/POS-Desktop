@@ -81,6 +81,7 @@ export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Ele
               id="pos-discount"
               type="number"
               inputMode="decimal"
+              step="any"
               min={0}
               placeholder="0"
               value={cart.discountInput}
@@ -95,6 +96,7 @@ export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Ele
                 id="pos-advance"
                 type="number"
                 inputMode="decimal"
+                step="any"
                 min={0}
                 className="pr-24"
                 value={cart.advanceInput ?? String(cart.advance)}

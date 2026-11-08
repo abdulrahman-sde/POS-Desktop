@@ -1,3 +1,4 @@
+import { isMoney } from '@shared/money'
 import { useRef, useState } from 'react'
 import { Add, Edit, Trash } from 'reicon-react'
 import { toast } from 'sonner'
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useCategories } from '@/features/categories/hooks/use-categories'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { PRODUCT_UNIT } from '@/features/products/types'
@@ -16,6 +18,7 @@ import { formatCurrency, plural } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ImportSessionApi } from '../hooks/use-import-session'
 import type { ImportRow } from '../types'
+import { sameName } from '../match'
 import { ChooseProductDialog } from './choose-product-dialog'
 import { EditableNumber } from './editable-number'
 import { MatchedProductDialog } from './matched-product-dialog'
@@ -76,6 +79,7 @@ export function ImportReview({
   onDiscard: () => void
 }): React.JSX.Element {
   const { products } = useProducts()
+  const { categories } = useCategories()
   const { session, addRow, patchRow, pickProduct, pickNew } = importer
   const [viewing, setViewing] = useState<ImportRow | null>(null) // opened the matched product
   const [choosing, setChoosing] = useState<ImportRow | null>(null) // picking a different product
@@ -104,12 +108,15 @@ export function ImportReview({
   const invalid = active.some(
     (row) => row.qty <= 0 || row.costPrice <= 0 || (row.productId === null && !row.name.trim())
   )
+  const fractional = active.some((row) => !Number.isInteger(row.qty) || !isMoney(row.costPrice))
   const problem =
     active.length === 0
       ? 'There is nothing to add.'
       : invalid
         ? 'Every item needs a name, a quantity and a price.'
-        : ''
+        : fractional
+          ? 'Use whole numbers for quantity, and at most 2 numbers after the dot for price.'
+          : ''
 
   // The invoice order, with a heading each time the invoice's category changes. Never regrouped or sorted.
   const sections: Section[] = []
@@ -158,6 +165,15 @@ export function ImportReview({
               <section key={`${section.heading}-${sectionIndex}`} className="flex flex-col gap-1.5">
                 <div className="mt-1 flex items-center gap-2">
                   <CategoryChip name={section.heading} />
+                  {categories.some((c) => sameName(c.name, section.heading)) ? null : (
+                    <Badge
+                      variant="info"
+                      className="bg-info/15"
+                      title="This category will be created when you add the items"
+                    >
+                      New category
+                    </Badge>
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {plural(section.rows.length, 'item')}
                   </span>

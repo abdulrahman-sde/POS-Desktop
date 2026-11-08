@@ -1,12 +1,13 @@
+import { roundMoney } from '@shared/money'
 import type { Payment } from '@/features/payments/types'
 import type { InvoiceSummary, Order, OrderItem } from './types'
 
 export function itemsSubtotal(items: OrderItem[]): number {
-  return items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
+  return roundMoney(items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0))
 }
 
 export function orderTotal(order: Pick<Order, 'items' | 'discount'>): number {
-  return Math.max(0, itemsSubtotal(order.items) - order.discount)
+  return roundMoney(Math.max(0, itemsSubtotal(order.items) - order.discount))
 }
 
 // How invoice payment status is worked out:
@@ -30,18 +31,20 @@ export function summarizeInvoices(
   }
 
   for (const [customerId, customerOrders] of byCustomer) {
-    let pool = payments
-      .filter((payment) => payment.customerId === customerId)
-      .reduce((sum, payment) => sum + payment.amount, 0)
+    let pool = roundMoney(
+      payments
+        .filter((payment) => payment.customerId === customerId)
+        .reduce((sum, payment) => sum + payment.amount, 0)
+    )
 
     const oldestFirst = [...customerOrders].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
     for (const order of oldestFirst) {
       const total = orderTotal(order)
       const advance = Math.min(order.advance, total)
-      const applied = Math.min(total - advance, pool)
-      pool -= applied
-      const paid = advance + applied
-      const due = total - paid
+      const applied = roundMoney(Math.min(total - advance, pool))
+      pool = roundMoney(pool - applied)
+      const paid = roundMoney(advance + applied)
+      const due = roundMoney(total - paid)
       result.set(order.id, {
         total,
         paid,
@@ -62,5 +65,5 @@ export function customerBalance(customerId: string, orders: Order[], payments: P
   const paid = payments
     .filter((payment) => payment.customerId === customerId)
     .reduce((sum, payment) => sum + payment.amount, 0)
-  return billed - paid
+  return roundMoney(billed - paid)
 }

@@ -87,7 +87,8 @@ function PaymentForm(props: PaymentFormProps): React.JSX.Element {
             <Input
               id="pay-amount"
               type="number"
-              inputMode="numeric"
+              inputMode="decimal"
+              step="any"
               min={0}
               autoFocus
               value={form.amount}

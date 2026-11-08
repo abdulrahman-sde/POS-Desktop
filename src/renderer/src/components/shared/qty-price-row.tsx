@@ -82,6 +82,7 @@ export function QtyPriceRow({
         <Input
           type="number"
           inputMode="decimal"
+          step="any"
           min={0}
           value={priceDraft ?? String(price)}
           aria-label={`Price of ${name}`}

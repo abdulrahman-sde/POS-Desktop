@@ -1,3 +1,4 @@
+import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { FormField } from '@/components/shared/form-field'
 import { OptionSelect } from '@/components/shared/option-select'
 import { Button } from '@/components/ui/button'
@@ -43,19 +44,21 @@ function PayForm(props: PaySupplierFormProps): React.JSX.Element {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Pay {supplier.name}</DialogTitle>
+        <DialogTitle>Pay this supplier</DialogTitle>
         <DialogDescription>
           {owed > 0
             ? `You owe them ${formatCurrency(owed)}. This lowers it.`
             : 'You do not owe them anything right now.'}
         </DialogDescription>
       </DialogHeader>
+      <DialogItemName name={supplier.name} />
       <FormField label="Money paid (Rs)" htmlFor="sp-amount" error={error}>
         <Input
           id="sp-amount"
           autoFocus
           type="number"
-          inputMode="numeric"
+          inputMode="decimal"
+          step="any"
           min={0}
           value={form.amount}
           onChange={(event) => setAmount(event.target.value)}

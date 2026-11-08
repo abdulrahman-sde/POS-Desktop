@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { EmptyState } from '@/components/shared/empty-state'
 import { Badge } from '@/components/ui/badge'
+import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -116,11 +117,12 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.El
       <Dialog open={deleting !== null} onOpenChange={(open) => !open && setDeleting(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete {deleting?.name}?</DialogTitle>
+            <DialogTitle>Delete this category?</DialogTitle>
             <DialogDescription>
               This category has no products, so nothing else will change.
             </DialogDescription>
           </DialogHeader>
+          <DialogItemName name={deleting?.name ?? ''} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleting(null)}>
               Cancel

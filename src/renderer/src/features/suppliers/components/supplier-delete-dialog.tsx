@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
 
+import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,12 +33,13 @@ export function SupplierDeleteDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete {supplier.name}?</DialogTitle>
+          <DialogTitle>Delete this supplier?</DialogTitle>
           <DialogDescription>
             They will no longer show in your suppliers list. Your old bills and payments stay in
             your records.
           </DialogDescription>
         </DialogHeader>
+        <DialogItemName name={supplier.name} />
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel

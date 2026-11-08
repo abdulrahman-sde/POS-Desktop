@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 
 import { PRODUCT_UNIT } from '@shared/products/constants'
+import { roundMoney } from '@shared/money'
 import { FIRST_INVOICE_NUMBER } from '@shared/sales/constants'
 import type { CreateOrderInput, Order } from '@shared/sales/types'
 import { getDb, type DbOrTx } from '../../db/connection'
@@ -45,10 +46,10 @@ export function createOrder(input: CreateOrderInput): Order {
       return { item, product }
     })
 
-    const subtotal = lines.reduce((sum, { item }) => sum + item.qty * item.unitPrice, 0)
+    const subtotal = roundMoney(lines.reduce((sum, { item }) => sum + item.qty * item.unitPrice, 0))
     if (input.discount > subtotal)
       throw new UserError('The discount cannot be more than the total.')
-    const total = subtotal - input.discount
+    const total = roundMoney(subtotal - input.discount)
     if (total <= 0) throw new UserError('The total must be more than zero.')
     if (input.advance > total) throw new UserError('Money received cannot be more than the total.')
     if (!input.customerId && input.advance < total) {

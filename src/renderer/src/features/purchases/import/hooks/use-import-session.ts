@@ -11,6 +11,7 @@ import { productsApi } from '@/features/products/api/products.api'
 import { productKeys } from '@/features/products/api/products.keys'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { unwrap } from '@/lib/api-result'
+import { roundMoney } from '@shared/money'
 import { extractInvoice } from '../extract'
 import { findProductByName } from '../match'
 import type { ExtractedInvoice, ImportEntry, ImportRow } from '../types'
@@ -42,8 +43,8 @@ export function useImportSession() {
           name: line.name,
           heading: resolveCategory(line.category, categories),
           category: resolveCategory(line.category, categories),
-          qty: line.qty,
-          costPrice: line.costPrice,
+          qty: Math.round(line.qty),
+          costPrice: roundMoney(line.costPrice),
           productId: match?.id ?? null,
           included: true,
           details: { brand: '', salePrice: null, reorderLevel: 5, shelf: '' }
@@ -128,7 +129,7 @@ export function useImportSession() {
             name: row.name.trim(),
             categoryId,
             brand: row.details.brand,
-            costPrice: Math.round(row.costPrice),
+            costPrice: roundMoney(row.costPrice),
             salePrice: row.details.salePrice ?? undefined,
             stock: 0,
             reorderLevel: row.details.reorderLevel,

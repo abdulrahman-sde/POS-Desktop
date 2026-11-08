@@ -1,6 +1,7 @@
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { moneyAboveZero } from '../money'
 import { products } from './table'
 
 // The rules for product input, generated from the table and then given plain-language messages.
@@ -10,18 +11,11 @@ const productFields = createInsertSchema(products, {
   categoryId: (s) => s.min(1, 'Choose a category, or add a new one with the + button.'),
   brand: (s) => s.trim().max(60, 'The brand is too long.'),
   shelf: (s) => s.trim().max(30, 'The shelf name is too long.'),
-  costPrice: z
-    .number({ error: 'Enter the cost price.' })
-    .int('Use whole rupees, with no decimals.')
-    .positive('Enter the cost price.'),
+  costPrice: moneyAboveZero('Enter the cost price.'),
   // Optional: when it is empty the backend uses the cost price plus 15%.
-  salePrice: z
-    .number({ error: 'Enter a selling price, or leave it empty.' })
-    .int('Use whole rupees, with no decimals.')
-    .positive('Enter a selling price, or leave it empty.')
-    .optional(),
-  stock: (s) => s.int('Use whole numbers.').min(0, 'Stock cannot be below 0.'),
-  reorderLevel: (s) => s.int('Use whole numbers.').min(0, 'This cannot be below 0.')
+  salePrice: moneyAboveZero('Enter a selling price, or leave it empty.').optional(),
+  stock: z.number().int('Use whole numbers.').min(0, 'Stock cannot be below 0.').optional(),
+  reorderLevel: z.number().int('Use whole numbers.').min(0, 'This cannot be below 0.').optional()
 }).omit({ id: true, itemCode: true, createdAt: true })
 
 // What the Add product form sends.

@@ -60,6 +60,7 @@ export function PurchaseCheckout({
             id="buy-paid"
             type="number"
             inputMode="decimal"
+            step="any"
             min={0}
             className="pr-24"
             value={cart.paidInput ?? String(cart.paid)}

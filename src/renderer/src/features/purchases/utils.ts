@@ -1,7 +1,8 @@
+import { roundMoney } from '@shared/money'
 import type { Purchase, PurchaseItem, SupplierPayment } from './types'
 
 export function purchaseSubtotal(items: PurchaseItem[]): number {
-  return items.reduce((sum, item) => sum + item.qty * item.costPrice, 0)
+  return roundMoney(items.reduce((sum, item) => sum + item.qty * item.costPrice, 0))
 }
 
 // What you still owe the supplier: all their bills, minus everything you have paid them.
@@ -16,5 +17,5 @@ export function supplierOwed(
   const paid = payments
     .filter((payment) => payment.supplierId === supplierId)
     .reduce((sum, payment) => sum + payment.amount, 0)
-  return billed - paid
+  return roundMoney(billed - paid)
 }

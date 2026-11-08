@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { isMoney, MONEY_DECIMALS_MESSAGE } from '@shared/money'
 import type { NewOrderInput } from '@shared/sales/types'
 import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
@@ -112,11 +113,15 @@ export function usePosCart() {
       ? 'Add at least one product.'
       : items.some((item) => item.unitPrice <= 0)
         ? 'Type a price for every item.'
-        : total <= 0
-          ? 'The total must be more than zero.'
-          : isWalkIn && due > 0
-            ? 'Walk-in customers must pay the full amount. Tap "Full amount", or choose a customer.'
-            : ''
+        : [...items.map((item) => item.unitPrice), discount, advance].some(
+              (amount) => !isMoney(amount)
+            )
+          ? MONEY_DECIMALS_MESSAGE
+          : total <= 0
+            ? 'The total must be more than zero.'
+            : isWalkIn && due > 0
+              ? 'Walk-in customers must pay the full amount. Tap "Full amount", or choose a customer.'
+              : ''
 
   const buildOrder = (): NewOrderInput => ({
     customerId: isWalkIn ? null : customerId,

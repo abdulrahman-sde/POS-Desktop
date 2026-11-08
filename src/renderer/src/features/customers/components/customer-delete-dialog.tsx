@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
 
+import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -34,12 +35,13 @@ export function CustomerDeleteDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete {customer.name}?</DialogTitle>
+          <DialogTitle>Delete this customer?</DialogTitle>
           <DialogDescription>
             They will no longer show in your customers list. Their old invoices and payments stay in
             your records.
           </DialogDescription>
         </DialogHeader>
+        <DialogItemName name={customer.name} />
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel

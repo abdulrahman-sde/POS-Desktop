@@ -1,5 +1,6 @@
 import { desc, sql } from 'drizzle-orm'
 
+import { roundMoney } from '@shared/money'
 import { purchaseItems, purchases, supplierPayments } from '@shared/schema'
 import type { DbOrTx } from '../../db/connection'
 
@@ -51,10 +52,10 @@ export const insertSupplierPayment = (db: DbOrTx, row: typeof supplierPayments.$
 export const owedToSupplier = (db: DbOrTx, supplierId: string): number => {
   const billed =
     db.get<{ n: number }>(sql`
-      select coalesce(sum(total - paid), 0) as n
+      select round(coalesce(sum(total - paid), 0), 2) as n
       from (
         select
-          coalesce((select sum(qty * cost_price) from purchase_items where purchase_id = p.id), 0) as total,
+          round(coalesce((select sum(qty * cost_price) from purchase_items where purchase_id = p.id), 0), 2) as total,
           p.paid as paid
         from purchases p
         where p.supplier_id = ${supplierId}
@@ -62,7 +63,7 @@ export const owedToSupplier = (db: DbOrTx, supplierId: string): number => {
     `)?.n ?? 0
   const paid =
     db.get<{ n: number }>(sql`
-      select coalesce(sum(amount), 0) as n from supplier_payments where supplier_id = ${supplierId}
+      select round(coalesce(sum(amount), 0), 2) as n from supplier_payments where supplier_id = ${supplierId}
     `)?.n ?? 0
-  return billed - paid
+  return roundMoney(billed - paid)
 }

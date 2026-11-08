@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
 
+import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -30,13 +31,14 @@ export function ProductDeleteDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete {product.name}?</DialogTitle>
+          <DialogTitle>Delete this product?</DialogTitle>
           <DialogDescription>
             {product.stock > 0 ? `You still have ${product.stock} ${PRODUCT_UNIT} in stock. ` : ''}
             It will no longer show in your products or on New Sale. Your old invoices and bills keep
             it, and you can bring it back from Settings.
           </DialogDescription>
         </DialogHeader>
+        <DialogItemName name={product.name} />
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel

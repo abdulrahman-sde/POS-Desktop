@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 
+import { roundMoney } from '@shared/money'
 import { FIRST_BILL_NUMBER } from '@shared/purchases/constants'
 import type {
   CreatePurchaseInput,
@@ -44,7 +45,7 @@ export function createPurchase(input: CreatePurchaseInput): Purchase {
       return { item, product }
     })
 
-    const total = lines.reduce((sum, { item }) => sum + item.qty * item.costPrice, 0)
+    const total = roundMoney(lines.reduce((sum, { item }) => sum + item.qty * item.costPrice, 0))
     if (input.paid > total) throw new UserError('Money paid cannot be more than the total.')
 
     const id = randomUUID()

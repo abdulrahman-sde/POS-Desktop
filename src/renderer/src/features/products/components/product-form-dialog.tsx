@@ -144,7 +144,8 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
           <Input
             id="p-cost"
             type="number"
-            inputMode="numeric"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.costPrice}
             onChange={text('costPrice')}
@@ -158,7 +159,8 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
           <Input
             id="p-sale"
             type="number"
-            inputMode="numeric"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.salePrice}
             placeholder={suggested > 0 ? String(suggested) : ''}

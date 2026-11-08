@@ -1,10 +1,16 @@
+import { roundMoney } from '@shared/money'
 import { format, isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, parseISO } from 'date-fns'
 
-const numberFormat = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 })
+const wholeFormat = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 })
+const paisaFormat = new Intl.NumberFormat('en-PK', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+})
 
 export function formatCurrency(amount: number): string {
-  const rounded = Math.round(amount)
-  return `${rounded < 0 ? '-' : ''}Rs ${numberFormat.format(Math.abs(rounded))}`
+  const value = roundMoney(amount)
+  const format = Number.isInteger(value) ? wholeFormat : paisaFormat
+  return `${value < 0 ? '-' : ''}Rs ${format.format(Math.abs(value))}`
 }
 
 export function formatDate(iso: string): string {

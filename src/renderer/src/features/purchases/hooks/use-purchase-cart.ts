@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { isMoney, MONEY_DECIMALS_MESSAGE } from '@shared/money'
 import type { NewPurchaseInput } from '@shared/purchases/types'
 import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers'
 import { useProducts } from '@/features/products/hooks/use-products'
@@ -104,9 +105,13 @@ export function usePurchaseCart() {
       ? 'Add at least one product.'
       : items.some((item) => item.costPrice <= 0)
         ? 'Type the cost for every item.'
-        : total <= 0
-          ? 'The total must be more than zero.'
-          : ''
+        : items.some((item) => !Number.isInteger(item.qty))
+          ? 'Use whole numbers for the quantity.'
+          : items.some((item) => !isMoney(item.costPrice)) || !isMoney(paid)
+            ? MONEY_DECIMALS_MESSAGE
+            : total <= 0
+              ? 'The total must be more than zero.'
+              : ''
 
   const buildPurchase = (): NewPurchaseInput => ({
     supplierId,
