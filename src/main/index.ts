@@ -11,9 +11,8 @@ nativeTheme.themeSource = 'light'
 
 app.setName('Stockwise')
 
-// The data folder was made under the app's first name. Keep using it, so renaming the app never
-// opens an empty database.
-app.setPath('userData', join(app.getPath('appData'), 'babar-trades'))
+// Fixed on purpose: the data folder name must never change once a shop has data in it.
+app.setPath('userData', join(app.getPath('appData'), 'Stockwise'))
 
 function createWindow(): void {
   // Create the browser window.
@@ -73,7 +72,7 @@ app.whenReady().then(() => {
   const migrations = app.isPackaged
     ? join(process.resourcesPath, 'migrations')
     : join(app.getAppPath(), 'src/main/db/migrations')
-  initDb(join(app.getPath('userData'), 'babar.db'), migrations)
+  initDb(join(app.getPath('userData'), 'stockwise.db'), migrations)
 
   // Turn on every backend route (categories, products ...).
   registerAllIpc()

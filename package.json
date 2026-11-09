@@ -1,6 +1,6 @@
 {
   "name": "stockwise",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "Stockwise: point of sale and customer accounts for a mobile parts shop",
   "main": "./out/main/index.js",
   "author": "Stockwise",
