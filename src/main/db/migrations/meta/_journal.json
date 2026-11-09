@@ -71,6 +71,20 @@
       "when": 1794168613601,
       "tag": "0009_settings_defaults",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794210465376,
+      "tag": "0010_careful_sabra",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1794211547017,
+      "tag": "0011_rename_shop_name",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from 'react-router'
 
+import { AuthGate } from '@/features/auth/components/auth-gate'
 import { PurchaseDraftProvider } from '@/app/providers/purchase-draft-provider'
 import { InvoiceViewerProvider } from '@/app/providers/invoice-viewer-provider'
 import { router } from '@/app/router'
@@ -10,11 +11,13 @@ import { queryClient } from '@/lib/query-client'
 function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
-      <PurchaseDraftProvider>
-        <InvoiceViewerProvider>
-          <RouterProvider router={router} />
-        </InvoiceViewerProvider>
-      </PurchaseDraftProvider>
+      <AuthGate>
+        <PurchaseDraftProvider>
+          <InvoiceViewerProvider>
+            <RouterProvider router={router} />
+          </InvoiceViewerProvider>
+        </PurchaseDraftProvider>
+      </AuthGate>
       <Toaster position="bottom-right" />
     </QueryClientProvider>
   )

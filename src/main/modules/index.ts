@@ -1,3 +1,4 @@
+import { registerAuthIpc } from './auth/auth.ipc'
 import { registerBackupIpc } from '../backup/backup.ipc'
 import { registerCategoriesIpc } from './categories/categories.ipc'
 import { registerCustomersIpc } from './customers/customers.ipc'
@@ -10,6 +11,7 @@ import { registerSettingsIpc } from './settings/settings.ipc'
 import { registerSuppliersIpc } from './suppliers/suppliers.ipc'
 
 export function registerAllIpc(): void {
+  registerAuthIpc()
   registerBackupIpc()
   registerCategoriesIpc()
   registerCustomersIpc()

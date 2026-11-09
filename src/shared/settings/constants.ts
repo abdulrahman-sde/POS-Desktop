@@ -1,5 +1,5 @@
 export const DEFAULT_SETTINGS = {
-  shopName: 'Babar Trades',
+  shopName: 'Bilal Mobile and Parts Wholesale',
   ownerName: '',
   phone: '',
   address: '',

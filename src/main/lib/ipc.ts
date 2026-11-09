@@ -2,6 +2,10 @@ import { ipcMain } from 'electron'
 import type { ZodType } from 'zod'
 
 import type { ApiResult } from '@shared/result'
+import { isUnlocked } from './session'
+
+// The only routes that answer before the password is entered.
+const SIGN_IN_CHANNELS = ['auth:status', 'auth:unlock']
 
 // Throw this for a mistake the owner can fix ("A product with this name already exists.").
 // The message is sent to the screen as it is, so write it in plain words.
@@ -17,6 +21,10 @@ export function handle<Input, Output>(
   run: (input: Input) => Output | Promise<Output>
 ): void {
   ipcMain.handle(channel, async (_event, raw: unknown): Promise<ApiResult<Output>> => {
+    // Until the password is entered, only the sign-in routes answer.
+    if (!SIGN_IN_CHANNELS.includes(channel) && !isUnlocked()) {
+      return { ok: false, message: 'Please sign in first.' }
+    }
     try {
       let input = undefined as Input
       if (schema) {

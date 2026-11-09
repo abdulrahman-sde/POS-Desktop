@@ -4,9 +4,16 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { closeDb, initDb } from './db/connection'
 import { registerAllIpc } from './modules'
+import { setUnlocked } from './lib/session'
 
 // The app is light only, even when the computer is in dark mode.
 nativeTheme.themeSource = 'light'
+
+app.setName('Stockwise')
+
+// The data folder was made under the app's first name. Keep using it, so renaming the app never
+// opens an empty database.
+app.setPath('userData', join(app.getPath('appData'), 'babar-trades'))
 
 function createWindow(): void {
   // Create the browser window.
@@ -17,12 +24,16 @@ function createWindow(): void {
     minHeight: 560,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    // Shows in the Windows taskbar and Linux; a Mac takes its icon from the app (see the dock line below).
+    ...(process.platform !== 'darwin' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
+
+  // On a Mac the app can stay open with no window; closing the window must still lock it.
+  mainWindow.on('closed', () => setUnlocked(false))
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -47,7 +58,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.stockwise.app')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -66,6 +77,9 @@ app.whenReady().then(() => {
 
   // Turn on every backend route (categories, products ...).
   registerAllIpc()
+
+  // A packaged Mac app already has its icon; while developing, set the dock one by hand.
+  if (process.platform === 'darwin' && !app.isPackaged) app.dock?.setIcon(icon)
 
   createWindow()
 

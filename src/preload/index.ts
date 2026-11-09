@@ -1,6 +1,7 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+import { authPreload } from './modules/auth'
 import { backupPreload } from './modules/backup'
 import { categoriesPreload } from './modules/categories'
 import { customersPreload } from './modules/customers'
@@ -16,6 +17,7 @@ import { suppliersPreload } from './modules/suppliers'
 // This list is the ONLY door from the React app to the computer: anything not listed here
 // cannot be reached from the screen.
 export const api = {
+  auth: authPreload,
   backup: backupPreload,
   categories: categoriesPreload,
   customers: customersPreload,
