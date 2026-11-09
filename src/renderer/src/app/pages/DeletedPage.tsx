@@ -13,10 +13,7 @@ export function DeletedPage(): React.JSX.Element {
 
   return (
     <>
-      <PageHeader
-        title="Deleted records"
-        description="Nothing is ever really deleted. Bring a product, customer, supplier or category back here."
-      />
+      <PageHeader title="Deleted records" />
 
       <div className="mb-3">
         <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>

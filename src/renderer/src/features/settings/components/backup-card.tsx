@@ -11,10 +11,7 @@ export function BackupCard(): React.JSX.Element {
     <Card>
       <CardHeader>
         <CardTitle>Save a copy of your data</CardTitle>
-        <CardDescription>
-          Keep a safe copy of your shop data. You choose where to save it, for example a USB stick.
-          Bringing a copy back is coming later.
-        </CardDescription>
+        <CardDescription>Bringing a copy back is coming later.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         <Button onClick={saveBackup}>

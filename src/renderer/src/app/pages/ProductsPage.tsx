@@ -39,7 +39,6 @@ export function ProductsPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Products"
-        description="Your mobile parts and accessories: prices, quality and stock levels."
         actions={
           <>
             <Button variant="outline" nativeButton={false} render={<Link to="/categories" />}>
@@ -62,13 +61,7 @@ export function ProductsPage(): React.JSX.Element {
           tone="success"
           value={formatCurrency(stockValue)}
         />
-        <StatCard
-          label="Low stock"
-          icon={Warning}
-          tone="warning"
-          value={String(lowCount)}
-          hint="Time to buy more"
-        />
+        <StatCard label="Low stock" icon={Warning} tone="warning" value={String(lowCount)} />
         <StatCard
           label="Out of stock"
           icon={CloseCircle}

@@ -17,7 +17,6 @@ export function ReportsPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Reports"
-        description="How much you sold and earned, and what sells best."
         actions={
           <Tabs
             value={String(range)}
@@ -38,7 +37,6 @@ export function ReportsPage(): React.JSX.Element {
           icon={GraphUp}
           tone="success"
           value={formatCurrency(report.profit)}
-          hint="Sold minus buying price"
         />
         <StatCard label="Orders" icon={Receipt2} tone="primary" value={String(report.orderCount)} />
         <StatCard

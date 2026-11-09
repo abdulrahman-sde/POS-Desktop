@@ -33,11 +33,7 @@ export function BuyStockPage(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-4 md:h-full">
-      <PageHeader
-        title="Buy stock"
-        description="Type what your supplier sent you, or import their invoice. Your stock updates when you save."
-        actions={<ImportInvoiceButton />}
-      />
+      <PageHeader title="Buy stock" actions={<ImportInvoiceButton />} />
 
       {/* Stacked on small screens; two panes side by side from tablet width up */}
       <div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row">
@@ -61,9 +57,6 @@ export function BuyStockPage(): React.JSX.Element {
                   Clear
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Type the quantity and the cost price of each piece.
-              </p>
             </div>
             <div className="border-t">
               <PurchaseLines cart={cart} />

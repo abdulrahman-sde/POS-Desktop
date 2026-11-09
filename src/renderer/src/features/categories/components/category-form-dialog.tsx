@@ -57,11 +57,7 @@ function CategoryForm({ category, onSaved, onDone }: CategoryFormProps): React.J
     <>
       <DialogHeader>
         <DialogTitle>{category ? 'Rename category' : 'Add category'}</DialogTitle>
-        <DialogDescription>
-          {category
-            ? 'The new name is also changed on all products in this category.'
-            : 'A category is a group of similar items, like Batteries or Chargers.'}
-        </DialogDescription>
+        {category ? <DialogDescription>Also renames it on its products.</DialogDescription> : null}
       </DialogHeader>
       <FormField label="Category name" htmlFor="cat-name" error={error}>
         <Input

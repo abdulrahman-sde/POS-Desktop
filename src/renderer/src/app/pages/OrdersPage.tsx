@@ -21,7 +21,6 @@ export function OrdersPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Orders"
-        description="Every sale you have made. Click one to see, print or send its invoice."
         actions={
           <Button nativeButton={false} render={<Link to="/sales/new" />}>
             <Add data-icon="inline-start" />

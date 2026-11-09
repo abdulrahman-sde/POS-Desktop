@@ -34,8 +34,7 @@ export function ProductDeleteDialog({
           <DialogTitle>Delete this product?</DialogTitle>
           <DialogDescription>
             {product.stock > 0 ? `You still have ${product.stock} ${PRODUCT_UNIT} in stock. ` : ''}
-            It will no longer show in your products or on New Sale. Your old invoices and bills keep
-            it, and you can bring it back from Settings.
+            You can bring it back from Settings.
           </DialogDescription>
         </DialogHeader>
         <DialogItemName name={product.name} />

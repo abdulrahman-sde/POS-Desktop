@@ -37,8 +37,7 @@ export function CustomerDeleteDialog({
         <DialogHeader>
           <DialogTitle>Delete this customer?</DialogTitle>
           <DialogDescription>
-            They will no longer show in your customers list. Their old invoices and payments stay in
-            your records.
+            Their old invoices and payments stay in your records.
           </DialogDescription>
         </DialogHeader>
         <DialogItemName name={customer.name} />

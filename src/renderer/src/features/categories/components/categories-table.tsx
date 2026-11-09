@@ -12,7 +12,6 @@ import { Card } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -121,9 +120,6 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.El
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete this category?</DialogTitle>
-            <DialogDescription>
-              This category has no products, so nothing else will change.
-            </DialogDescription>
           </DialogHeader>
           <DialogItemName name={deleting?.name ?? ''} />
           <DialogFooter>

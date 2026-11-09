@@ -17,7 +17,6 @@ export function DashboardPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Dashboard"
-        description="How your shop is doing today."
         actions={
           <Button nativeButton={false} render={<Link to="/sales/new" />}>
             <Add data-icon="inline-start" />
@@ -46,7 +45,6 @@ export function DashboardPage(): React.JSX.Element {
           icon={Warning}
           tone="destructive"
           value={String(stats.lowStock.length)}
-          hint="Items to buy more of"
         />
         <StatCard
           label="Sold this month"

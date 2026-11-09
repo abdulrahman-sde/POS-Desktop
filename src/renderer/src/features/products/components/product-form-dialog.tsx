@@ -77,11 +77,9 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
         <DialogTitle>
           {draft ? 'Add details' : product ? 'Edit product' : 'Add product'}
         </DialogTitle>
-        <DialogDescription>
-          {draft
-            ? 'Add anything else you know about this product. It is saved when you add the invoice to your bill.'
-            : 'Fields marked * must be filled in. The rest are optional.'}
-        </DialogDescription>
+        {draft ? (
+          <DialogDescription>Saved when you add the invoice to your bill.</DialogDescription>
+        ) : null}
       </DialogHeader>
 
       <div className="grid min-h-0 flex-1 content-start gap-3 overflow-y-auto sm:grid-cols-3">
@@ -134,13 +132,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
         </FormField>
 
         <SectionTitle>Prices</SectionTitle>
-        <FormField
-          label="Cost price (Rs)"
-          htmlFor="p-cost"
-          error={errors.costPrice}
-          hint="What you paid for one piece"
-          required
-        >
+        <FormField label="Cost price (Rs)" htmlFor="p-cost" error={errors.costPrice} required>
           <Input
             id="p-cost"
             type="number"
@@ -154,7 +146,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
         <FormField
           label="Selling price (Rs)"
           htmlFor="p-sale"
-          hint={`Leave empty and we add ${markupPercent}% to the cost price. You can change it on each sale.`}
+          hint={`Empty means cost price + ${markupPercent}%`}
         >
           <Input
             id="p-sale"
@@ -196,11 +188,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
             />
           </FormField>
         ) : null}
-        <FormField
-          label="Warn me when stock is"
-          htmlFor="p-reorder"
-          hint="Shows as low stock at this number"
-        >
+        <FormField label="Warn me when stock is" htmlFor="p-reorder">
           <Input
             id="p-reorder"
             type="number"
@@ -210,7 +198,7 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
             onChange={text('reorderLevel')}
           />
         </FormField>
-        <FormField label="Shelf / location" htmlFor="p-shelf" hint="e.g. A1, Drawer 3">
+        <FormField label="Shelf / location" htmlFor="p-shelf">
           <Input id="p-shelf" value={form.shelf} onChange={text('shelf')} />
         </FormField>
       </div>

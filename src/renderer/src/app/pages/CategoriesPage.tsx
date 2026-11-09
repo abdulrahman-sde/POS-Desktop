@@ -26,7 +26,6 @@ export function CategoriesPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Categories"
-        description="Group your products, so they are easy to find when selling."
         actions={
           <Button onClick={() => setOpen(true)}>
             <Add data-icon="inline-start" />

@@ -34,10 +34,7 @@ export function SupplierDeleteDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete this supplier?</DialogTitle>
-          <DialogDescription>
-            They will no longer show in your suppliers list. Your old bills and payments stay in
-            your records.
-          </DialogDescription>
+          <DialogDescription>Your old bills and payments stay in your records.</DialogDescription>
         </DialogHeader>
         <DialogItemName name={supplier.name} />
         <DialogFooter>

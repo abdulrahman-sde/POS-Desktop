@@ -32,7 +32,6 @@ export function PaymentsPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Payments"
-        description="All the money you have received, at the counter and later."
         actions={
           <Button onClick={() => setOpen(true)}>
             <Wallet data-icon="inline-start" />

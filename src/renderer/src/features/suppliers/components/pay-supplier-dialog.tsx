@@ -47,7 +47,7 @@ function PayForm(props: PaySupplierFormProps): React.JSX.Element {
         <DialogTitle>Pay this supplier</DialogTitle>
         <DialogDescription>
           {owed > 0
-            ? `You owe them ${formatCurrency(owed)}. This lowers it.`
+            ? `You owe them ${formatCurrency(owed)}.`
             : 'You do not owe them anything right now.'}
         </DialogDescription>
       </DialogHeader>

@@ -77,7 +77,6 @@ export function PurchaseCheckout({
           </Button>
         </div>
       </FormField>
-      <p className="text-xs text-muted-foreground">Leave 0 if you will pay later.</p>
 
       {/* Always shown (greyed out until money is paid), so the panel never changes size */}
       <div className="flex items-center justify-between gap-2">

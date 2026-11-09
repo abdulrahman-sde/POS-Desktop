@@ -39,7 +39,6 @@ export function CustomersPage(): React.JSX.Element {
     <>
       <PageHeader
         title="Customers"
-        description="Your customers and how much each one owes you."
         actions={
           <Button onClick={() => setFormOpen(true)}>
             <Add data-icon="inline-start" />

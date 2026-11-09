@@ -1,7 +1,7 @@
 import { Logo } from '@/components/layout/logo'
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/shared/password-input'
 import { useSignInForm } from '../hooks/use-sign-in-form'
@@ -16,7 +16,6 @@ export function SignInScreen({ shopName }: SignInScreenProps): React.JSX.Element
         <CardHeader className="items-center text-center">
           <Logo className="size-12" />
           <CardTitle className="text-xl">Sign in</CardTitle>
-          <CardDescription>Enter the password to open the shop.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.submit} className="flex flex-col gap-4">

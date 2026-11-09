@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -56,10 +55,6 @@ function PaymentForm(props: PaymentFormProps): React.JSX.Element {
     <>
       <DialogHeader>
         <DialogTitle>Receive payment</DialogTitle>
-        <DialogDescription>
-          This lowers the amount the customer owes you. It is counted against their oldest unpaid
-          invoices first.
-        </DialogDescription>
       </DialogHeader>
 
       <div className="flex flex-col gap-3">

@@ -11,10 +11,7 @@ export function ChangePasswordCard(): React.JSX.Element {
     <Card>
       <CardHeader>
         <CardTitle>Change password</CardTitle>
-        <CardDescription>
-          This is the password you type every time you open the app. Write the new one down
-          somewhere safe: if it is forgotten, the app cannot be opened.
-        </CardDescription>
+        <CardDescription>If you forget the password, the app cannot be opened.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={submit} className="flex flex-col gap-3 sm:max-w-sm">
