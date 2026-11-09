@@ -1,9 +1,9 @@
 {
-  "name": "babar-trades",
+  "name": "stockwise",
   "version": "1.0.0",
-  "description": "Babar Trades: point of sale and customer accounts for a mobile parts shop",
+  "description": "Stockwise: point of sale and customer accounts for a mobile parts shop",
   "main": "./out/main/index.js",
-  "author": "Babar Trades",
+  "author": "Stockwise",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",

@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { SIDEBAR_NAME } from './constants'
 import { Logo } from './logo'
 import { isNavActive, navGroups, settingsItem, type NavItem } from './nav-config'
 
@@ -40,7 +41,7 @@ export function AppSidebar(): React.JSX.Element {
         <div className="flex items-center gap-2 px-1">
           <Logo className="size-6" />
           <span className="truncate text-sm group-data-[collapsible=icon]:hidden">
-            Babar Trades
+            {SIDEBAR_NAME}
           </span>
         </div>
       </SidebarHeader>

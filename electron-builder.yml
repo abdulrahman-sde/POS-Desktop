@@ -1,5 +1,5 @@
-appId: com.babartrades.app
-productName: Babar Trades
+appId: com.stockwise.app
+productName: Stockwise
 directories:
   buildResources: build
 files:
@@ -17,7 +17,7 @@ extraResources:
   - from: src/main/db/migrations
     to: migrations
 win:
-  executableName: babar-trades
+  executableName: stockwise
   target:
     - target: nsis
       arch:

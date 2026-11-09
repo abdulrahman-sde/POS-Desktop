@@ -1,4 +1,4 @@
-# Babar Trades
+# Stockwise
 
 Electron + React 19 + TypeScript desktop POS/accounting app (electron-vite, Tailwind v4, shadcn `base-nova`).
 
@@ -33,7 +33,7 @@ Electron + React 19 + TypeScript desktop POS/accounting app (electron-vite, Tail
 
 ## Data and backend
 
-The database is SQLite (`better-sqlite3` + Drizzle ORM + Zod), owned by the Electron main process. It starts EMPTY (no demo data). Money is Pakistani rupees (PKR) with up to 2 decimals (paise), for example Rs 1,250.50. Quantities and stock are whole numbers. The money columns are declared `integer` in the tables, which is fine: SQLite keeps decimals in them. Rules use `moneyAboveZero` / `moneyFromZero` (`src/shared/money.ts`, message "Use at most 2 numbers after the dot, like 150.50."), every total is rounded with `roundMoney` (backend services, the SQL sums and `features/*/utils.ts`), and `formatCurrency` shows paise only when there are some. The file is `babar.db` in `app.getPath('userData')`.
+The database is SQLite (`better-sqlite3` + Drizzle ORM + Zod), owned by the Electron main process. It starts EMPTY (no demo data). Money is Pakistani rupees (PKR) with up to 2 decimals (paise), for example Rs 1,250.50. Quantities and stock are whole numbers. The money columns are declared `integer` in the tables, which is fine: SQLite keeps decimals in them. Rules use `moneyAboveZero` / `moneyFromZero` (`src/shared/money.ts`, message "Use at most 2 numbers after the dot, like 150.50."), every total is rounded with `roundMoney` (backend services, the SQL sums and `features/*/utils.ts`), and `formatCurrency` shows paise only when there are some. The file is `babar.db` in `app.getPath('userData')`, which `src/main/index.ts` pins to the folder `babar-trades` (the app's first name) so renaming the app never opens an empty database.
 
 One feature goes through these layers, in order:
 - `src/shared/<feature>/`: `table.ts` (Drizzle table, RELATIVE imports only because drizzle-kit reads it), `schema.ts` (Zod rules with the plain-language messages, used by the forms AND the backend), `types.ts` (inferred types). Run `npm run db:generate` after changing a table; the generated .sql files in `src/main/db/migrations` run when the app starts.

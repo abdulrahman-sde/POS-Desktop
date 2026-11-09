@@ -12,9 +12,9 @@ export function registerBackupIpc(): void {
       title: 'Save a copy of your data',
       defaultPath: join(
         app.getPath('documents'),
-        `babar-trades-backup-${format(new Date(), 'yyyy-MM-dd')}.db`
+        `stockwise-backup-${format(new Date(), 'yyyy-MM-dd')}.db`
       ),
-      filters: [{ name: 'Babar Trades backup', extensions: ['db'] }]
+      filters: [{ name: 'Stockwise backup', extensions: ['db'] }]
     }
     const window = BrowserWindow.getFocusedWindow()
     const chosen = window
