@@ -12,7 +12,6 @@ export type SuppliersResult = {
 export type SupplierRow = {
   supplier: Supplier
   billCount: number
-  totalBought: number
   owed: number
 }
 
@@ -21,6 +20,7 @@ export type SupplierFormFields = {
   phone: string
   address: string
   notes: string
+  openingBalance: string
 }
 
 export type SupplierFormErrors = Record<string, string>

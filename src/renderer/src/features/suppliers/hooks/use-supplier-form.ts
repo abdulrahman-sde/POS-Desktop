@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { addSupplierSchema } from '@shared/suppliers/schema'
+import { toNumber } from '@/lib/format'
 import type { SupplierFormErrors, SupplierFormFields, SupplierFormProps } from '../types'
 import { useAddSupplier, useUpdateSupplier } from './use-supplier-mutations'
 
@@ -12,7 +13,8 @@ export function useSupplierForm({ supplier, onSaved, onDone }: SupplierFormProps
     name: supplier?.name ?? '',
     phone: supplier?.phone ?? '',
     address: supplier?.address ?? '',
-    notes: supplier?.notes ?? ''
+    notes: supplier?.notes ?? '',
+    openingBalance: supplier?.openingBalance ? String(supplier.openingBalance) : ''
   })
   const [errors, setErrors] = useState<SupplierFormErrors>({})
   const saving = addSupplier.isPending || updateSupplier.isPending
@@ -25,7 +27,10 @@ export function useSupplierForm({ supplier, onSaved, onDone }: SupplierFormProps
     }
 
   const submit = async (): Promise<void> => {
-    const checked = addSupplierSchema.safeParse(form)
+    const checked = addSupplierSchema.safeParse({
+      ...form,
+      openingBalance: toNumber(form.openingBalance)
+    })
     if (!checked.success) {
       const next: SupplierFormErrors = {}
       for (const issue of checked.error.issues) next[String(issue.path[0])] ??= issue.message

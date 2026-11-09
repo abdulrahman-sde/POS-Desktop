@@ -7,7 +7,7 @@ import { useCustomers } from '@/features/customers/hooks/use-customers'
 import { useProducts } from '@/features/products/hooks/use-products'
 import type { Product } from '@/features/products/types'
 import { toNumber } from '@/lib/format'
-import type { OrderItem, PaymentMethod } from '../types'
+import type { CartItem, PaymentMethod } from '../types'
 import { customerBalance, itemsSubtotal } from '../utils'
 import { useOrders } from './use-orders'
 
@@ -15,7 +15,8 @@ export const WALK_IN = 'walk-in'
 
 // unitPrice is the price of ONE piece for this sale. It starts at the product's usual selling price
 // and the shop owner can change it on the line. The line total is qty x unitPrice.
-type CartLine = { productId: string; qty: number; unitPrice: number }
+// name is only what this invoice will say for the line; empty or missing means the product's own name.
+type CartLine = { productId: string; qty: number; unitPrice: number; name?: string }
 
 // All the state and rules of the sale screen: cart lines, customer, discount, advance.
 export function usePosCart() {
@@ -30,7 +31,7 @@ export function usePosCart() {
   const [advanceInput, setAdvanceInput] = useState<string | null>('0')
   const [method, setMethod] = useState<PaymentMethod>('cash')
 
-  const items: OrderItem[] = useMemo(
+  const items: CartItem[] = useMemo(
     () =>
       lines.flatMap((line) => {
         const product = products.find((p) => p.id === line.productId)
@@ -38,7 +39,8 @@ export function usePosCart() {
           ? [
               {
                 productId: product.id,
-                name: product.name,
+                name: line.name?.trim() || product.name,
+                productName: product.name,
                 qty: line.qty,
                 unitPrice: line.unitPrice,
                 costPrice: product.costPrice
@@ -56,8 +58,10 @@ export function usePosCart() {
   const advance =
     advanceInput === null ? total : Math.min(Math.max(0, toNumber(advanceInput)), total)
   const due = total - advance
-  const previousBalance = isWalkIn ? 0 : customerBalance(customerId, orders, payments)
   const customer = customers.find((c) => c.id === customerId)
+  const previousBalance = isWalkIn
+    ? 0
+    : customerBalance(customerId, orders, payments, customer?.openingBalance)
   const itemCount = items.reduce((sum, item) => sum + item.qty, 0)
 
   const qtyInCart = (productId: string): number =>
@@ -93,6 +97,12 @@ export function usePosCart() {
     )
   }
 
+  // Changes the name shown on the invoice for this line only. The product itself is never changed.
+  const setName = (productId: string, name: string): void =>
+    setLines((prev) =>
+      prev.map((line) => (line.productId === productId ? { ...line, name } : line))
+    )
+
   const removeLine = (productId: string): void =>
     setLines((prev) => prev.filter((line) => line.productId !== productId))
 
@@ -125,7 +135,12 @@ export function usePosCart() {
 
   const buildOrder = (): NewOrderInput => ({
     customerId: isWalkIn ? null : customerId,
-    items: items.map(({ productId, qty, unitPrice }) => ({ productId, qty, unitPrice })),
+    items: items.map(({ productId, qty, unitPrice, name, productName }) => ({
+      productId,
+      qty,
+      unitPrice,
+      ...(name !== productName && { name })
+    })),
     discount,
     advance,
     method,
@@ -155,6 +170,7 @@ export function usePosCart() {
     addProduct,
     setQty,
     setUnitPrice,
+    setName,
     removeLine,
     reset,
     problem,

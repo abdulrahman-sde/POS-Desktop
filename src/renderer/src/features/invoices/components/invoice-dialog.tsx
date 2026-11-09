@@ -64,7 +64,9 @@ function InvoiceBody({
   }
 
   const customer = customers.find((item) => item.id === order.customerId)
-  const totalBalance = customer ? customerBalance(customer.id, orders, payments) : 0
+  const totalBalance = customer
+    ? customerBalance(customer.id, orders, payments, customer.openingBalance)
+    : 0
   const message = buildInvoiceMessage(order, summary, customer, totalBalance, settings)
 
   return (
@@ -74,11 +76,9 @@ function InvoiceBody({
           Invoice {order.invoiceNo}
           <InvoiceStatusBadge status={summary.status} />
         </DialogTitle>
-        <DialogDescription>
-          {customer
-            ? 'Print it, or send it to the customer on WhatsApp.'
-            : 'Walk-in sale: there is no phone number to send this to.'}
-        </DialogDescription>
+        {customer ? null : (
+          <DialogDescription>Walk-in sale: no phone number to send this to.</DialogDescription>
+        )}
       </DialogHeader>
 
       {/* Only the invoice scrolls; the title and the buttons stay in view. */}

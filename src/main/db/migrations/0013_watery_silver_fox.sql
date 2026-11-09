@@ -1,0 +1,1 @@
+ALTER TABLE `suppliers` ADD `opening_balance` integer DEFAULT 0 NOT NULL;

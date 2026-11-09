@@ -73,7 +73,7 @@ export function createOrder(input: CreateOrderInput): Order {
         id: randomUUID(),
         orderId: id,
         productId: product.id,
-        name: product.name,
+        name: item.name || product.name,
         qty: item.qty,
         unitPrice: item.unitPrice,
         costPrice: product.costPrice

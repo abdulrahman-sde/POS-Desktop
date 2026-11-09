@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -38,25 +37,25 @@ function CustomerForm(props: CustomerFormProps): React.JSX.Element {
     <>
       <DialogHeader>
         <DialogTitle>{customer ? 'Edit customer' : 'Add customer'}</DialogTitle>
-        <DialogDescription>
-          The phone number is used to send invoices and reminders on WhatsApp.
-        </DialogDescription>
       </DialogHeader>
 
       <div className="flex flex-col gap-3">
         <FormField label="Name" htmlFor="c-name" error={errors.name}>
           <Input id="c-name" autoFocus value={form.name} onChange={text('name')} />
         </FormField>
-        <FormField
-          label="Phone / WhatsApp number"
-          htmlFor="c-phone"
-          error={errors.phone}
-          hint="e.g. 0300 1234567"
-        >
+        <FormField label="Phone / WhatsApp number" htmlFor="c-phone" error={errors.phone}>
           <Input id="c-phone" type="tel" value={form.phone} onChange={text('phone')} />
         </FormField>
         <FormField label="Address" htmlFor="c-address" error={errors.address}>
           <Input id="c-address" value={form.address} onChange={text('address')} />
+        </FormField>
+        <FormField label="Owes you from before" htmlFor="c-opening" error={errors.openingBalance}>
+          <Input
+            id="c-opening"
+            inputMode="decimal"
+            value={form.openingBalance}
+            onChange={text('openingBalance')}
+          />
         </FormField>
         <FormField label="Notes" htmlFor="c-notes" error={errors.notes}>
           <Textarea id="c-notes" value={form.notes} onChange={text('notes')} />

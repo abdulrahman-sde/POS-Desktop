@@ -6,7 +6,9 @@ import { paymentMethods } from './constants'
 export const orderItemInputSchema = z.object({
   productId: z.string().min(1),
   qty: z.number({ error: 'Enter how many.' }).int('Use whole numbers.').positive('Enter how many.'),
-  unitPrice: moneyAboveZero('Type a price for every item.')
+  unitPrice: moneyAboveZero('Type a price for every item.'),
+  // Only for this invoice line. The product keeps its own name.
+  name: z.string().trim().max(120, 'The item name is too long.').optional()
 })
 
 export const createOrderSchema = z.object({

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { addCustomerSchema } from '@shared/customers/schema'
+import { toNumber } from '@/lib/format'
 import type { CustomerFormErrors, CustomerFormFields, CustomerFormProps } from '../types'
 import { useAddCustomer, useUpdateCustomer } from './use-customer-mutations'
 
@@ -12,7 +13,8 @@ export function useCustomerForm({ customer, onSaved, onDone }: CustomerFormProps
     name: customer?.name ?? '',
     phone: customer?.phone ?? '',
     address: customer?.address ?? '',
-    notes: customer?.notes ?? ''
+    notes: customer?.notes ?? '',
+    openingBalance: customer?.openingBalance ? String(customer.openingBalance) : ''
   })
   const [errors, setErrors] = useState<CustomerFormErrors>({})
   const saving = addCustomer.isPending || updateCustomer.isPending
@@ -25,7 +27,10 @@ export function useCustomerForm({ customer, onSaved, onDone }: CustomerFormProps
     }
 
   const submit = async (): Promise<void> => {
-    const checked = addCustomerSchema.safeParse(form)
+    const checked = addCustomerSchema.safeParse({
+      ...form,
+      openingBalance: toNumber(form.openingBalance)
+    })
     if (!checked.success) {
       const next: CustomerFormErrors = {}
       for (const issue of checked.error.issues) next[String(issue.path[0])] ??= issue.message

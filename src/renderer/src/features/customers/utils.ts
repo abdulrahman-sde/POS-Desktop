@@ -8,7 +8,7 @@ import type { Customer } from './types'
 export type LedgerEntry = {
   id: string
   date: string
-  kind: 'invoice' | 'payment'
+  kind: 'invoice' | 'payment' | 'opening'
   description: string
   detail: string
   orderId?: string
@@ -23,7 +23,8 @@ export type LedgerEntry = {
 export function buildLedger(
   customerId: string,
   orders: Order[],
-  payments: Payment[]
+  payments: Payment[],
+  openingBalance = 0
 ): LedgerEntry[] {
   const summaries = summarizeInvoices(orders, payments)
 
@@ -65,7 +66,22 @@ export function buildLedger(
       received: payment.amount
     }))
 
-  const oldestFirst = [...invoices, ...received].sort(
+  const before: Omit<LedgerEntry, 'totalOwed'>[] =
+    openingBalance > 0
+      ? [
+          {
+            id: 'opening',
+            date: '',
+            kind: 'opening',
+            description: 'Owed from before',
+            detail: 'What this customer already owed you before you started using Stockwise',
+            bill: openingBalance,
+            received: 0
+          }
+        ]
+      : []
+
+  const oldestFirst = [...before, ...invoices, ...received].sort(
     (a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)
   )
   let owed = 0

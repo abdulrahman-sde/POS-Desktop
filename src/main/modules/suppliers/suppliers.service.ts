@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 
+import { roundMoney } from '@shared/money'
 import type { AddSupplierInput, Supplier, UpdateSupplierInput } from '@shared/suppliers/types'
 import { getDb } from '../../db/connection'
 import { UserError } from '../../lib/ipc'
@@ -21,6 +22,7 @@ export function addSupplier(input: AddSupplierInput): Supplier {
     phone: input.phone?.trim() ?? '',
     address: input.address?.trim() ?? '',
     notes: input.notes?.trim() ?? '',
+    openingBalance: input.openingBalance ?? 0,
     createdAt: new Date().toISOString()
   })
 }
@@ -44,8 +46,9 @@ export function updateSupplier(input: UpdateSupplierInput): Supplier {
 
 export function deleteSupplier(id: string): void {
   const db = getDb()
-  if (!q.findActiveSupplierById(db, id)) throw new UserError('This supplier no longer exists.')
-  const owed = owedToSupplier(db, id)
+  const supplier = q.findActiveSupplierById(db, id)
+  if (!supplier) throw new UserError('This supplier no longer exists.')
+  const owed = roundMoney(supplier.openingBalance + owedToSupplier(db, id))
   if (owed > 0) {
     throw new UserError(
       `You still owe this supplier Rs ${new Intl.NumberFormat('en-PK').format(owed)}. Pay them first.`

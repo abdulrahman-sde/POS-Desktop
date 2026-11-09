@@ -19,6 +19,12 @@ import {
 import { formatCurrency, formatDate } from '@/lib/format'
 import type { LedgerEntry } from '../utils'
 
+const kindBadge = {
+  invoice: { label: 'Invoice', variant: 'info' },
+  payment: { label: 'Payment', variant: 'success' },
+  opening: { label: 'From before', variant: 'secondary' }
+} as const
+
 export function CustomerLedgerTable({ entries }: { entries: LedgerEntry[] }): React.JSX.Element {
   const invoices = useInvoices()
   const { openInvoice } = useInvoiceViewer()
@@ -49,11 +55,11 @@ export function CustomerLedgerTable({ entries }: { entries: LedgerEntry[] }): Re
               return (
                 <TableRow key={entry.id}>
                   <TableCell className="whitespace-nowrap text-muted-foreground">
-                    {formatDate(entry.date)}
+                    {entry.date ? formatDate(entry.date) : '-'}
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
-                    <Badge variant={entry.kind === 'invoice' ? 'info' : 'success'}>
-                      {entry.kind === 'invoice' ? 'Invoice' : 'Payment'}
+                    <Badge variant={kindBadge[entry.kind].variant}>
+                      {kindBadge[entry.kind].label}
                     </Badge>
                   </TableCell>
                   <TableCell className="whitespace-normal">

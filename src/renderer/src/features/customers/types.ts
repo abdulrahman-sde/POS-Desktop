@@ -20,6 +20,7 @@ export type CustomerFormFields = {
   phone: string
   address: string
   notes: string
+  openingBalance: string
 }
 
 export type CustomerFormErrors = Record<string, string>

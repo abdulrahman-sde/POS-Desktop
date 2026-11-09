@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const suppliers = sqliteTable(
   'suppliers',
@@ -9,6 +9,7 @@ export const suppliers = sqliteTable(
     phone: text('phone').notNull().default(''),
     address: text('address').notNull().default(''),
     notes: text('notes').notNull().default(''),
+    openingBalance: integer('opening_balance').notNull().default(0),
     createdAt: text('created_at').notNull(),
     deletedAt: text('deleted_at')
   },

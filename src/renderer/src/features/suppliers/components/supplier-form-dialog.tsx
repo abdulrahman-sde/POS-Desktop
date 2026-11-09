@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -38,25 +37,25 @@ function SupplierForm(props: SupplierFormProps): React.JSX.Element {
     <>
       <DialogHeader>
         <DialogTitle>{supplier ? 'Edit supplier' : 'Add supplier'}</DialogTitle>
-        <DialogDescription>
-          A supplier is the person or company you buy your stock from.
-        </DialogDescription>
       </DialogHeader>
 
       <div className="flex flex-col gap-3">
         <FormField label="Name" htmlFor="s-name" error={errors.name}>
           <Input id="s-name" autoFocus value={form.name} onChange={text('name')} />
         </FormField>
-        <FormField
-          label="Phone / WhatsApp number"
-          htmlFor="s-phone"
-          error={errors.phone}
-          hint="e.g. 0300 1234567"
-        >
+        <FormField label="Phone / WhatsApp number" htmlFor="s-phone" error={errors.phone}>
           <Input id="s-phone" type="tel" value={form.phone} onChange={text('phone')} />
         </FormField>
         <FormField label="Address" htmlFor="s-address" error={errors.address}>
           <Input id="s-address" value={form.address} onChange={text('address')} />
+        </FormField>
+        <FormField label="You owe from before" htmlFor="s-opening" error={errors.openingBalance}>
+          <Input
+            id="s-opening"
+            inputMode="decimal"
+            value={form.openingBalance}
+            onChange={text('openingBalance')}
+          />
         </FormField>
         <FormField label="Notes" htmlFor="s-notes" error={errors.notes}>
           <Textarea id="s-notes" value={form.notes} onChange={text('notes')} />

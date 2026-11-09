@@ -6,8 +6,6 @@ import { PageHeader } from '@/components/shared/page-header'
 import { SearchField } from '@/components/shared/search-field'
 import { StatCard } from '@/components/shared/stat-card'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PurchasesTable } from '@/features/purchases/components/purchases-table'
 import { SupplierFormDialog } from '@/features/suppliers/components/supplier-form-dialog'
 import { SuppliersTable } from '@/features/suppliers/components/suppliers-table'
 import { useSupplierRows } from '@/features/suppliers/hooks/use-supplier-rows'
@@ -15,7 +13,6 @@ import { formatCurrency } from '@/lib/format'
 
 export function SuppliersPage(): React.JSX.Element {
   const rows = useSupplierRows()
-  const [tab, setTab] = useState('suppliers')
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
 
@@ -27,14 +24,12 @@ export function SuppliersPage(): React.JSX.Element {
     )
   }, [rows, query])
 
-  const totalBought = rows.reduce((sum, row) => sum + row.totalBought, 0)
   const totalOwed = rows.reduce((sum, row) => sum + Math.max(0, row.owed), 0)
 
   return (
     <>
       <PageHeader
         title="Suppliers"
-        description="Who you buy from, and what you still have to pay them."
         actions={
           <>
             <Button variant="outline" onClick={() => setOpen(true)}>
@@ -49,14 +44,8 @@ export function SuppliersPage(): React.JSX.Element {
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <StatCard label="Suppliers" icon={Shop} tone="primary" value={String(rows.length)} />
-        <StatCard
-          label="Total bought"
-          icon={Cart}
-          tone="info"
-          value={formatCurrency(totalBought)}
-        />
         <StatCard
           label="You owe"
           icon={Wallet}
@@ -66,23 +55,15 @@ export function SuppliersPage(): React.JSX.Element {
       </div>
 
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList>
-            <TabsTrigger value="suppliers">Suppliers</TabsTrigger>
-            <TabsTrigger value="bills">Stock bills</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        {tab === 'suppliers' ? (
-          <SearchField
-            className="sm:max-w-xs sm:flex-1"
-            placeholder="Search suppliers"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        ) : null}
+        <SearchField
+          className="sm:max-w-xs sm:flex-1"
+          placeholder="Search suppliers"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
       </div>
 
-      {tab === 'suppliers' ? <SuppliersTable rows={visible} /> : <PurchasesTable />}
+      <SuppliersTable rows={visible} />
 
       <SupplierFormDialog open={open} onOpenChange={setOpen} />
     </>

@@ -1,6 +1,7 @@
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { moneyFromZero } from '../money'
 import { suppliers } from './table'
 
 const supplierFields = createInsertSchema(suppliers, {
@@ -13,7 +14,8 @@ const supplierFields = createInsertSchema(suppliers, {
         'Phone number looks too short.'
       ),
   address: (s) => s.trim().max(200, 'The address is too long.'),
-  notes: (s) => s.trim().max(500, 'The notes are too long.')
+  notes: (s) => s.trim().max(500, 'The notes are too long.'),
+  openingBalance: moneyFromZero('The amount cannot be below 0.').optional()
 }).omit({ id: true, createdAt: true })
 
 export const addSupplierSchema = supplierFields

@@ -52,8 +52,8 @@ export function CustomerDetailPage(): React.JSX.Element {
     )
   }
 
-  const owed = customerBalance(customer.id, orders, payments)
-  const ledger = buildLedger(customer.id, orders, payments)
+  const owed = customerBalance(customer.id, orders, payments, customer.openingBalance)
+  const ledger = buildLedger(customer.id, orders, payments, customer.openingBalance)
   const bought = ledger.reduce((sum, entry) => sum + entry.bill, 0)
   const received = ledger.reduce((sum, entry) => sum + entry.received, 0)
   const unpaidCount = orders.filter(
@@ -75,10 +75,7 @@ export function CustomerDetailPage(): React.JSX.Element {
 
       <PageHeader
         title={customer.name}
-        description={
-          [customer.phone, customer.address].filter(Boolean).join(' · ') ||
-          'No phone or address saved'
-        }
+        description={[customer.phone, customer.address].filter(Boolean).join(' · ') || undefined}
         actions={
           <>
             <Button onClick={() => setPaymentOpen(true)}>
@@ -149,10 +146,6 @@ export function CustomerDetailPage(): React.JSX.Element {
       </div>
 
       <h2 className="text-sm text-muted-foreground">All invoices and payments</h2>
-      <p className="mb-2 text-xs text-muted-foreground">
-        &quot;Total owed&quot; is everything he owed you after that line. The top line is what he
-        owes you today.
-      </p>
       <CustomerLedgerTable entries={ledger} />
 
       {customer.notes ? (

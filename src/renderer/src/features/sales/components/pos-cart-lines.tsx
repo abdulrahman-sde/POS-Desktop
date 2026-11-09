@@ -3,6 +3,7 @@ import { Cart } from 'reicon-react'
 import { EmptyState } from '@/components/shared/empty-state'
 import { QtyPriceHeader, QtyPriceRow } from '@/components/shared/qty-price-row'
 import type { PosCart } from '../hooks/use-pos-cart'
+import { CartLineName } from './cart-line-name'
 
 export function PosCartLines({ cart }: { cart: PosCart }): React.JSX.Element {
   if (cart.items.length === 0) {
@@ -25,7 +26,11 @@ export function PosCartLines({ cart }: { cart: PosCart }): React.JSX.Element {
             key={item.productId}
             className="flex flex-col gap-1.5 rounded-lg border border-border bg-background p-2"
           >
-            <p className="text-sm break-words">{item.name}</p>
+            <CartLineName
+              name={item.name}
+              productName={item.productName}
+              onChange={(name) => cart.setName(item.productId, name)}
+            />
             <QtyPriceRow
               name={item.name}
               qty={item.qty}

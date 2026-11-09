@@ -57,13 +57,19 @@ export function summarizeInvoices(
   return result
 }
 
-// What a customer owes in total. A negative number means they have paid in advance.
-export function customerBalance(customerId: string, orders: Order[], payments: Payment[]): number {
+// What a customer owes in total, starting from what they already owed before the first invoice here.
+// A negative number means they have paid in advance.
+export function customerBalance(
+  customerId: string,
+  orders: Order[],
+  payments: Payment[],
+  openingBalance = 0
+): number {
   const billed = orders
     .filter((order) => order.customerId === customerId)
     .reduce((sum, order) => sum + orderTotal(order) - Math.min(order.advance, orderTotal(order)), 0)
   const paid = payments
     .filter((payment) => payment.customerId === customerId)
     .reduce((sum, payment) => sum + payment.amount, 0)
-  return roundMoney(billed - paid)
+  return roundMoney(openingBalance + billed - paid)
 }

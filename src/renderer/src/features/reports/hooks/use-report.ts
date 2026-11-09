@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useOrders } from '@/features/sales/hooks/use-orders'
+import { useProducts } from '@/features/products/hooks/use-products'
 import { PRODUCT_UNIT } from '@/features/products/types'
 import { orderTotal } from '@/features/sales/utils'
 import { isSameDay } from '@/lib/format'
@@ -9,6 +10,7 @@ export type ReportRange = 7 | 30
 
 export function useReport(range: ReportRange) {
   const { orders } = useOrders()
+  const { products } = useProducts()
 
   return useMemo(() => {
     const start = new Date()
@@ -41,7 +43,8 @@ export function useReport(range: ReportRange) {
     for (const order of inRange) {
       for (const item of order.items) {
         const current = byProduct.get(item.productId) ?? {
-          name: item.name,
+          // The product's own name, not the (possibly renamed) name on the invoice line.
+          name: products.find((p) => p.id === item.productId)?.name ?? item.name,
           qty: 0,
           revenue: 0,
           unit: PRODUCT_UNIT
@@ -54,5 +57,5 @@ export function useReport(range: ReportRange) {
     const topProducts = [...byProduct.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 6)
 
     return { sales, profit: sales - cost, orderCount: inRange.length, days, topProducts }
-  }, [orders, range])
+  }, [orders, products, range])
 }

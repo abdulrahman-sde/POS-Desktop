@@ -24,7 +24,9 @@ export function usePaymentForm({ customerId, onDone }: PaymentFormProps) {
   const [error, setError] = useState('')
 
   const customer = customers.find((item) => item.id === form.customerId)
-  const owed = form.customerId ? customerBalance(form.customerId, orders, payments) : 0
+  const owed = form.customerId
+    ? customerBalance(form.customerId, orders, payments, customer?.openingBalance)
+    : 0
 
   const setCustomer = (value: string): void => setForm((prev) => ({ ...prev, customerId: value }))
   const setMethod = (value: PaymentMethod): void => setForm((prev) => ({ ...prev, method: value }))

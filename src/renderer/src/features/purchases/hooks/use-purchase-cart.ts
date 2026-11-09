@@ -50,7 +50,14 @@ export function usePurchaseCart() {
   const paid = paidInput === null ? total : Math.min(Math.max(0, toNumber(paidInput)), total)
   const due = total - paid
   const itemCount = items.reduce((sum, item) => sum + item.qty, 0)
-  const alreadyOwed = supplierId ? supplierOwed(supplierId, purchases, supplierPayments) : 0
+  const alreadyOwed = supplierId
+    ? supplierOwed(
+        supplierId,
+        purchases,
+        supplierPayments,
+        suppliers.find((s) => s.id === supplierId)?.openingBalance
+      )
+    : 0
 
   // Adding a product that is already on the bill adds one more piece, so it never appears twice.
   const addProduct = (product: Product): void =>

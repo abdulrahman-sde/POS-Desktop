@@ -19,6 +19,7 @@ export function addCustomer(input: AddCustomerInput): Customer {
     phone: input.phone?.trim() ?? '',
     address: input.address?.trim() ?? '',
     notes: input.notes?.trim() ?? '',
+    openingBalance: input.openingBalance ?? 0,
     createdAt: new Date().toISOString()
   })
 }
@@ -38,8 +39,11 @@ export function updateCustomer(input: UpdateCustomerInput): Customer {
 
 export function deleteCustomer(id: string): void {
   const db = getDb()
-  if (!q.findActiveCustomerById(db, id)) throw new UserError('This customer no longer exists.')
-  const owed = roundMoney(unpaidAtSale(db, id) - sumPaidByCustomer(db, id))
+  const customer = q.findActiveCustomerById(db, id)
+  if (!customer) throw new UserError('This customer no longer exists.')
+  const owed = roundMoney(
+    customer.openingBalance + unpaidAtSale(db, id) - sumPaidByCustomer(db, id)
+  )
   if (owed > 0) {
     throw new UserError(
       `This customer still owes you Rs ${new Intl.NumberFormat('en-PK').format(owed)}. Receive payment first.`

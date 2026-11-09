@@ -22,7 +22,7 @@ export function useCustomerRows(): CustomerRow[] {
             .at(-1) ?? null
         return {
           customer,
-          balance: customerBalance(customer.id, orders, payments),
+          balance: customerBalance(customer.id, orders, payments, customer.openingBalance),
           orderCount: own.length,
           lastOrderAt: last
         }

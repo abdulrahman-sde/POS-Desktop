@@ -38,14 +38,13 @@ export function SuppliersTable({ rows }: { rows: SupplierRow[] }): React.JSX.Ele
             <TableRow>
               <TableHead>Supplier</TableHead>
               <TableHead className="hidden md:table-cell">Phone</TableHead>
-              <TableHead className="hidden sm:table-cell text-right">Total bought</TableHead>
               <TableHead className="text-right">You owe</TableHead>
               <TableHead className="w-0" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((row) => {
-              const { supplier, totalBought, owed } = row
+              const { supplier, owed } = row
               return (
                 <TableRow key={supplier.id}>
                   <TableCell>
@@ -56,9 +55,6 @@ export function SuppliersTable({ rows }: { rows: SupplierRow[] }): React.JSX.Ele
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {supplier.phone || '-'}
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-right text-muted-foreground">
-                    {formatCurrency(totalBought)}
                   </TableCell>
                   <TableCell className="text-right">
                     <span className={owed > 0 ? 'text-destructive' : 'text-muted-foreground'}>
