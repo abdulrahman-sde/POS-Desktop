@@ -35,7 +35,10 @@ export function EditableNumber({
         min={0}
         value={draft ?? String(value)}
         aria-label={label}
-        className={cn('h-8 px-1.5 text-center text-sm', prefix && 'pl-8')}
+        className={cn(
+          'h-8 border-border px-1.5 text-center text-sm focus-visible:border-border focus-visible:bg-background',
+          prefix && 'pl-8'
+        )}
         onFocus={(event) => event.target.select()}
         onChange={(event) => {
           setDraft(event.target.value)

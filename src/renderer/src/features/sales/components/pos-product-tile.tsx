@@ -51,14 +51,14 @@ export function PosProductTile({
 
       {/* Cost price comes first and is the strongest line. The usual price is smaller and quieter on purpose. */}
       <span className="flex flex-col gap-1">
-        <span className="flex items-center justify-between gap-2">
+        <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
           <span className="flex items-center gap-1.5 text-sm whitespace-nowrap">
             <Coin className="size-4" />
             Cost price
           </span>
           <span className="text-base whitespace-nowrap">{formatCurrency(product.costPrice)}</span>
         </span>
-        <span className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
           <span className="whitespace-nowrap">Usual price</span>
           <span className="whitespace-nowrap">{formatCurrency(product.salePrice)}</span>
         </span>

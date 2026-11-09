@@ -209,7 +209,7 @@ export function ImportReview({
                             value={row.name}
                             placeholder="Product name"
                             aria-label={`Name of item ${number}`}
-                            className="h-8 text-sm"
+                            className="h-8 border-border text-sm focus-visible:border-border focus-visible:bg-background"
                             ref={(element) => {
                               if (element && focusName.current === row.id) {
                                 focusName.current = null
