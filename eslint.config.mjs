@@ -25,8 +25,18 @@ export default defineConfig(
     },
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
-      ...eslintPluginReactRefresh.configs.vite.rules
+      ...eslintPluginReactRefresh.configs.vite.rules,
+      // TypeScript already works the types out (shadcn parts, Drizzle queries, query hooks)
+      '@typescript-eslint/explicit-function-return-type': 'off'
     }
+  },
+  {
+    // shadcn files and the stat card export style helpers next to their components
+    files: [
+      'src/renderer/src/components/ui/**',
+      'src/renderer/src/components/shared/stat-card.tsx'
+    ],
+    rules: { 'react-refresh/only-export-components': 'off' }
   },
   eslintConfigPrettier
 )

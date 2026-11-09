@@ -150,8 +150,8 @@ export function CustomerDetailPage(): React.JSX.Element {
 
       <h2 className="text-sm text-muted-foreground">All invoices and payments</h2>
       <p className="mb-2 text-xs text-muted-foreground">
-        "Total owed" is everything he owed you after that line. The top line is what he owes you
-        today.
+        &quot;Total owed&quot; is everything he owed you after that line. The top line is what he
+        owes you today.
       </p>
       <CustomerLedgerTable entries={ledger} />
 
