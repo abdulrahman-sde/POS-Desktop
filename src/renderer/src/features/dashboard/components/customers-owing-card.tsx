@@ -8,7 +8,7 @@ import type { CustomerRow } from '@/features/customers/types'
 export function CustomersOwingCard({ rows }: { rows: CustomerRow[] }): React.JSX.Element {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="border-b border-foreground/10">
         <CardTitle>Customers who owe you</CardTitle>
         <CardAction>
           <Button variant="ghost" size="sm" nativeButton={false} render={<Link to="/customers" />}>
@@ -16,15 +16,15 @@ export function CustomersOwingCard({ rows }: { rows: CustomerRow[] }): React.JSX
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col divide-y">
+      <CardContent className="flex flex-col divide-y divide-foreground/10 px-2">
         {rows.length === 0 ? (
-          <p className="py-2 text-muted-foreground">Nobody owes you anything.</p>
+          <p className="px-2 py-2 text-muted-foreground">Nobody owes you anything.</p>
         ) : (
           rows.map(({ customer, balance }) => (
             <Link
               key={customer.id}
               to={`/customers/${customer.id}`}
-              className="flex items-center justify-between gap-3 py-2 hover:bg-muted/50"
+              className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 hover:bg-muted"
             >
               <span className="break-words">{customer.name}</span>
               <BalanceAmount amount={balance} />

@@ -16,7 +16,7 @@ export function RecentOrdersCard({ rows }: { rows: Row[] }): React.JSX.Element {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="border-b border-foreground/10">
         <CardTitle>Recent orders</CardTitle>
         <CardAction>
           <Button variant="ghost" size="sm" nativeButton={false} render={<Link to="/orders" />}>
@@ -24,12 +24,12 @@ export function RecentOrdersCard({ rows }: { rows: Row[] }): React.JSX.Element {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col divide-y">
+      <CardContent className="flex flex-col divide-y divide-foreground/10 px-2">
         {rows.map(({ order, customerName, total }) => (
           <Button
             key={order.id}
             variant="ghost"
-            className="h-auto w-full justify-between gap-3 rounded-none bg-transparent px-0 py-2 font-normal hover:bg-muted"
+            className="h-auto w-full justify-between gap-3 rounded-lg bg-transparent px-2 py-2 font-normal hover:bg-muted"
             onClick={() => openInvoice(order.id)}
           >
             <span className="flex min-w-0 flex-col items-start">
