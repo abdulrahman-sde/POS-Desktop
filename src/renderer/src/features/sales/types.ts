@@ -12,7 +12,7 @@ export const paymentMethodLabels: Record<PaymentMethod, string> = {
 export type OrderItem = Pick<OrderItemRow, 'productId' | 'name' | 'qty' | 'unitPrice' | 'costPrice'>
 
 // A line in the New Sale cart. `name` is what the invoice will say; `productName` is the product's own name.
-export type CartItem = OrderItem & { productName: string }
+export type CartItem = OrderItem & { productName: string; stock: number }
 
 export type CartLineNameProps = {
   name: string

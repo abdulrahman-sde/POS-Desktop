@@ -41,6 +41,7 @@ export function usePosCart() {
                 productId: product.id,
                 name: line.name?.trim() || product.name,
                 productName: product.name,
+                stock: product.stock,
                 qty: line.qty,
                 unitPrice: line.unitPrice,
                 costPrice: product.costPrice

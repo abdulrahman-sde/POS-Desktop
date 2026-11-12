@@ -6,7 +6,8 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-export type Option = { value: string; label: string }
+// keywords: extra text a search box also looks in (a customer's phone number); used by SearchableSelect.
+export type Option = { value: string; label: string; keywords?: string }
 
 type OptionSelectProps = {
   id?: string

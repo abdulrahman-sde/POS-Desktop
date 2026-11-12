@@ -34,6 +34,7 @@ export function PosCartLines({ cart }: { cart: PosCart }): React.JSX.Element {
             <QtyPriceRow
               name={item.name}
               qty={item.qty}
+              max={item.stock}
               price={item.unitPrice}
               onQtyChange={(qty) => cart.setQty(item.productId, qty)}
               onPriceChange={(price) => cart.setUnitPrice(item.productId, price)}

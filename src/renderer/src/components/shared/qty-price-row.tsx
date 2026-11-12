@@ -1,6 +1,7 @@
 import type { QtyPriceHeaderProps } from './types'
 import { useState } from 'react'
 import { Add, Minus, Trash } from 'reicon-react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +14,7 @@ const totalColumn = 'min-w-20 shrink-0 text-right whitespace-nowrap'
 type QtyPriceRowProps = {
   name: string
   qty: number
+  max?: number // the most that can be added (what is in stock). Buy Stock has no limit
   price: number // price of ONE piece
   onQtyChange: (qty: number) => void
   onPriceChange: (price: number) => void
@@ -25,6 +27,7 @@ type QtyPriceRowProps = {
 export function QtyPriceRow({
   name,
   qty,
+  max,
   price,
   onQtyChange,
   onPriceChange,
@@ -33,6 +36,11 @@ export function QtyPriceRow({
   // While a field is being typed in, it shows exactly what was typed (even empty). When you leave it, it shows the real value again.
   const [qtyDraft, setQtyDraft] = useState<string | null>(null)
   const [priceDraft, setPriceDraft] = useState<string | null>(null)
+  const atMax = max !== undefined && qty >= max
+  // One id, so clicking again replaces the message instead of stacking another.
+  const warnMax = (limit: number): void => {
+    toast.error(`Only ${limit} in stock`, { id: 'qty-limit' })
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -47,16 +55,21 @@ export function QtyPriceRow({
           <Minus />
         </Button>
         <Input
-          type="number"
-          inputMode="decimal"
-          min={0}
+          type="text"
+          inputMode="numeric"
           value={qtyDraft ?? String(qty)}
           aria-label={`Quantity of ${name}`}
-          className="h-6 w-9 px-1 text-center"
+          className="h-6 w-11 px-1 text-center"
           onFocus={(event) => event.target.select()}
           onChange={(event) => {
-            setQtyDraft(event.target.value)
-            const next = toNumber(event.target.value)
+            // Whole numbers only. Past the stock it stops at the stock and says so.
+            const digits = event.target.value.replace(/\D/g, '')
+            let next = Number(digits)
+            if (max !== undefined && next > max) {
+              next = max
+              warnMax(max)
+            }
+            setQtyDraft(digits === '' ? '' : String(next))
             if (next > 0) onQtyChange(next)
           }}
           onBlur={() => {
@@ -70,7 +83,9 @@ export function QtyPriceRow({
           variant="outline"
           size="icon-xs"
           aria-label="Increase quantity"
-          onClick={() => onQtyChange(qty + 1)}
+          aria-disabled={atMax}
+          className={atMax ? 'opacity-50' : undefined}
+          onClick={() => (atMax ? warnMax(max) : onQtyChange(qty + 1))}
         >
           <Add />
         </Button>

@@ -3,7 +3,7 @@ import { Add } from 'reicon-react'
 
 import { FormField } from '@/components/shared/form-field'
 import { useCustomers } from '@/features/customers/hooks/use-customers'
-import { OptionSelect } from '@/components/shared/option-select'
+import { SearchableSelect } from '@/components/shared/searchable-select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CustomerFormDialog } from '@/features/customers/components/customer-form-dialog'
@@ -42,13 +42,13 @@ export function PosCheckout({ cart, onSubmit }: PosCheckoutProps): React.JSX.Ele
     <div className="flex flex-col gap-2.5 border-t border-foreground/10 bg-background p-3">
       <FormField label="Customer" htmlFor="pos-customer">
         <div className="flex gap-2">
-          <OptionSelect
+          <SearchableSelect
             id="pos-customer"
             value={cart.customerId}
             onValueChange={cart.selectCustomer}
             options={[
               { value: WALK_IN, label: 'Walk-in customer' },
-              ...customers.map((c) => ({ value: c.id, label: c.name }))
+              ...customers.map((c) => ({ value: c.id, label: c.name, keywords: c.phone }))
             ]}
           />
           <Button

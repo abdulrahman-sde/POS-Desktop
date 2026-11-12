@@ -13,6 +13,7 @@ import { paymentMethodLabels, type PaymentMethod } from '@/features/sales/types'
 import { formatCurrency } from '@/lib/format'
 import { FormField } from './form-field'
 import { OptionSelect } from './option-select'
+import { SearchableSelect } from './searchable-select'
 
 const methodOptions = (Object.keys(paymentMethodLabels) as PaymentMethod[]).map((value) => ({
   value,
@@ -60,12 +61,16 @@ function PaymentForm(props: PaymentFormProps): React.JSX.Element {
       <div className="flex flex-col gap-3">
         {customerId ? null : (
           <FormField label="Customer" htmlFor="pay-customer">
-            <OptionSelect
+            <SearchableSelect
               id="pay-customer"
               value={form.customerId}
               onValueChange={setCustomer}
               placeholder="Choose a customer"
-              options={customers.map((item) => ({ value: item.id, label: item.name }))}
+              options={customers.map((item) => ({
+                value: item.id,
+                label: item.name,
+                keywords: item.phone
+              }))}
             />
           </FormField>
         )}
