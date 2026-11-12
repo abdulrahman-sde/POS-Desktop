@@ -10,10 +10,18 @@ export type DbOrTx = Db | Parameters<Parameters<Db['transaction']>[0]>[0]
 
 let db: Db | null = null
 let sqlite: Database.Database | null = null
+// Kept after closeDb(), so the database can be opened again (bringing back a saved copy).
+let dbFile = ''
+let migrationsDir = ''
+
+export const getDbFile = (): string => dbFile
+export const getMigrationsFolder = (): string => migrationsDir
 
 // Opens the database file (creating it the first time) and brings its tables up to date.
 // This file knows nothing about Electron on purpose, so it can also be used in tests.
 export function initDb(filePath: string, migrationsFolder: string): Db {
+  dbFile = filePath
+  migrationsDir = migrationsFolder
   sqlite = new Database(filePath)
   // WAL keeps the file safe if the computer is switched off in the middle of a save.
   sqlite.pragma('journal_mode = WAL')
@@ -29,6 +37,11 @@ export function initDb(filePath: string, migrationsFolder: string): Db {
 export function backupDatabase(destination: string): Promise<unknown> {
   if (!sqlite) throw new Error('The database is not open yet.')
   return sqlite.backup(destination)
+}
+
+// SQLite's own quick check of the file. False when the database is damaged or not open.
+export function isDatabaseHealthy(): boolean {
+  return sqlite !== null && sqlite.pragma('quick_check', { simple: true }) === 'ok'
 }
 
 export function getDb(): Db {
