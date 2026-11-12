@@ -30,11 +30,6 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
 
-publish:
-  provider: github
-  owner: abdulrahman-sde
-  repo: POS-Desktop
-
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
