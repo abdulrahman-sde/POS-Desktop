@@ -8,7 +8,7 @@ import type {
   UpdateProductInput
 } from '@shared/products/types'
 import { autoSalePrice } from '@shared/products/pricing'
-import { getDb } from '../../db/connection'
+import { getDb, type DbOrTx } from '../../db/connection'
 import { readSettings } from '../settings/settings.service'
 import { UserError } from '../../lib/ipc'
 import * as q from './products.queries'
@@ -20,33 +20,37 @@ export function listProducts(): Product[] {
   return q.listProducts(getDb())
 }
 
-export function addProduct(input: AddProductInput): Product {
-  return getDb().transaction((tx) => {
-    if (!findCategoryById(tx, input.categoryId))
-      throw new UserError('Choose a category from the list.')
-    if (q.findProductByName(tx, input.name.trim())) {
-      throw new UserError('You already have a product with this name.')
-    }
+// The steps of adding a product, for use inside a transaction that is already open (Buy Stock makes the new products
+// of an imported invoice in the same transaction that saves the bill).
+export function createProductIn(tx: DbOrTx, input: AddProductInput): Product {
+  if (!findCategoryById(tx, input.categoryId))
+    throw new UserError('Choose a category from the list.')
+  if (q.findProductByName(tx, input.name.trim())) {
+    throw new UserError('You already have a product with this name.')
+  }
 
-    const defaults = readSettings(tx)
-    const id = randomUUID()
-    q.insertProduct(tx, {
-      id,
-      itemCode: `ITM-${String(q.highestItemNumber(tx) + 1).padStart(4, '0')}`,
-      name: input.name.trim(),
-      categoryId: input.categoryId,
-      brand: input.brand?.trim() ?? '',
-      quality: input.quality ?? null,
-      shelf: input.shelf?.trim() ?? '',
-      costPrice: input.costPrice,
-      // No selling price typed: use the cost price plus 15%.
-      salePrice: input.salePrice ?? autoSalePrice(input.costPrice, defaults.defaultMarkupPercent),
-      stock: input.stock ?? 0,
-      reorderLevel: input.reorderLevel ?? defaults.defaultReorderLevel,
-      createdAt: new Date().toISOString()
-    })
-    return q.findProductById(tx, id)!
+  const defaults = readSettings(tx)
+  const id = randomUUID()
+  q.insertProduct(tx, {
+    id,
+    itemCode: `ITM-${String(q.highestItemNumber(tx) + 1).padStart(4, '0')}`,
+    name: input.name.trim(),
+    categoryId: input.categoryId,
+    brand: input.brand?.trim() ?? '',
+    quality: input.quality ?? null,
+    shelf: input.shelf?.trim() ?? '',
+    costPrice: input.costPrice,
+    // No selling price typed: use the cost price plus 15%.
+    salePrice: input.salePrice ?? autoSalePrice(input.costPrice, defaults.defaultMarkupPercent),
+    stock: input.stock ?? 0,
+    reorderLevel: input.reorderLevel ?? defaults.defaultReorderLevel,
+    createdAt: new Date().toISOString()
   })
+  return q.findProductById(tx, id)!
+}
+
+export function addProduct(input: AddProductInput): Product {
+  return getDb().transaction((tx) => createProductIn(tx, input))
 }
 
 export function updateProduct(input: UpdateProductInput): Product {

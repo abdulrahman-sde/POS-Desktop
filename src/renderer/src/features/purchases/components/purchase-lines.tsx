@@ -1,6 +1,7 @@
 import { Box } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
+import { Badge } from '@/components/ui/badge'
 import { QtyPriceHeader, QtyPriceRow } from '@/components/shared/qty-price-row'
 import type { PurchaseCart } from '../hooks/use-purchase-cart'
 
@@ -24,7 +25,14 @@ export function PurchaseLines({ cart }: { cart: PurchaseCart }): React.JSX.Eleme
             key={item.productId}
             className="flex flex-col gap-1.5 rounded-lg border border-border bg-background p-2"
           >
-            <p className="text-sm break-words">{item.name}</p>
+            <p className="flex flex-wrap items-center gap-2 text-sm break-words">
+              {item.name}
+              {item.isNew ? (
+                <Badge variant="info" className="bg-info/15">
+                  New
+                </Badge>
+              ) : null}
+            </p>
             <QtyPriceRow
               name={item.name}
               qty={item.qty}

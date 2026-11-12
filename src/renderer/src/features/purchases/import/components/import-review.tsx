@@ -1,4 +1,3 @@
-import { isMoney } from '@shared/money'
 import { useRef, useState } from 'react'
 import { Add, Edit, Trash } from 'reicon-react'
 import { toast } from 'sonner'
@@ -19,6 +18,7 @@ import { cn } from '@/lib/utils'
 import type { ImportSessionApi } from '../hooks/use-import-session'
 import type { ImportRow } from '../types'
 import { sameName } from '../match'
+import { firstImportProblem } from '../utils'
 import { ChooseProductDialog } from './choose-product-dialog'
 import { EditableNumber } from './editable-number'
 import { MatchedProductDialog } from './matched-product-dialog'
@@ -105,18 +105,8 @@ export function ImportReview({
   const itemsTotal = active.reduce((sum, row) => sum + row.qty * row.costPrice, 0)
   const skipped = session.invoice.skipped ?? [] // an import opened before skipping existed has none
   const skippedTotal = skipped.reduce((sum, line) => sum + line.amount, 0)
-  const invalid = active.some(
-    (row) => row.qty <= 0 || row.costPrice <= 0 || (row.productId === null && !row.name.trim())
-  )
-  const fractional = active.some((row) => !Number.isInteger(row.qty) || !isMoney(row.costPrice))
   const problem =
-    active.length === 0
-      ? 'There is nothing to add.'
-      : invalid
-        ? 'Every item needs a name, a quantity and a price.'
-        : fractional
-          ? 'Use whole numbers for quantity, and at most 2 numbers after the dot for price.'
-          : ''
+    active.length === 0 ? 'There is nothing to add.' : firstImportProblem(active, session.rows)
 
   // The invoice order, with a heading each time the invoice's category changes. Never regrouped or sorted.
   const sections: Section[] = []

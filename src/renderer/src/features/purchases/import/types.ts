@@ -1,3 +1,5 @@
+import type { NewBillProduct } from '@shared/purchases/types'
+
 // One line read from a supplier's invoice.
 export type ExtractedLine = {
   id: string
@@ -38,5 +40,9 @@ export type ImportRow = {
   details: NewProductDetails
 }
 
-// What the review page hands to the bill.
-export type ImportEntry = { productId: string; qty: number; costPrice: number }
+// What the review page hands to the bill: one of your products, or a new product that is only made when the bill is
+// saved (so nothing is created if the bill is never saved).
+export type ImportEntry = { name: string; qty: number; costPrice: number } & (
+  | { productId: string; newProduct?: undefined }
+  | { productId?: undefined; newProduct: NewBillProduct }
+)

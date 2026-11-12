@@ -3,7 +3,10 @@ import type { Product } from '@/features/products/types'
 
 export type { Purchase, SupplierPayment }
 
-export type PurchaseItem = Pick<PurchaseItemRow, 'productId' | 'name' | 'qty' | 'costPrice'>
+// productId of a line that is a new product (not saved yet) is a made-up key, only used to find the line on the screen.
+export type PurchaseItem = Pick<PurchaseItemRow, 'productId' | 'name' | 'qty' | 'costPrice'> & {
+  isNew?: boolean
+}
 
 export type PurchasesResult = {
   purchases: Purchase[]

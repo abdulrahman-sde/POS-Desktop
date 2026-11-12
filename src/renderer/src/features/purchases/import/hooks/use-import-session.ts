@@ -1,17 +1,10 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useQueryClient } from '@tanstack/react-query'
-
-import { categoriesApi } from '@/features/categories/api/categories.api'
-import { categoryKeys } from '@/features/categories/api/categories.keys'
 import { useCategories } from '@/features/categories/hooks/use-categories'
 import { OTHERS_CATEGORY } from '@/features/categories/types'
-import { productsApi } from '@/features/products/api/products.api'
-import { productKeys } from '@/features/products/api/products.keys'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { useSettings } from '@/features/settings/hooks/use-settings'
-import { unwrap } from '@/lib/api-result'
 import { roundMoney } from '@shared/money'
 import { extractInvoice } from '../extract'
 import { findProductByName } from '../match'
@@ -26,7 +19,6 @@ export type ImportSession = {
 }
 
 export function useImportSession() {
-  const queryClient = useQueryClient()
   const { products } = useProducts()
   const { categories } = useCategories()
   const { settings } = useSettings()
@@ -115,50 +107,26 @@ export function useImportSession() {
   const pickProduct = (id: string, productId: string): void => patchRow(id, { productId })
   const pickNew = (id: string): void => patchRow(id, { productId: null })
 
-  const commit = async (): Promise<ImportEntry[]> => {
+  // Only reads the rows. Nothing is created here: a new product is made when the bill is saved, together with the bill.
+  const commit = (): ImportEntry[] => {
     if (!session) return []
-    const entries: ImportEntry[] = []
-    const categoryIds = new Map(categories.map((c) => [c.name.toLowerCase(), c.id]))
-    const madeProducts = new Map<string, string>()
-
-    for (const row of session.rows.filter((r) => r.included)) {
-      if (row.productId) {
-        entries.push({ productId: row.productId, qty: row.qty, costPrice: row.costPrice })
-        continue
-      }
-
-      const category = row.category || OTHERS_CATEGORY
-      let categoryId = categoryIds.get(category.toLowerCase())
-      if (!categoryId) {
-        categoryId = unwrap(await categoriesApi.add(category)).id
-        categoryIds.set(category.toLowerCase(), categoryId)
-      }
-      const key = row.name.trim().toLowerCase()
-      let productId = madeProducts.get(key)
-      if (!productId) {
-        const product = unwrap(
-          await productsApi.add({
-            name: row.name.trim(),
-            categoryId,
+    return session.rows
+      .filter((row) => row.included)
+      .map((row): ImportEntry => {
+        const base = { name: row.name.trim(), qty: row.qty, costPrice: roundMoney(row.costPrice) }
+        if (row.productId) return { ...base, productId: row.productId }
+        return {
+          ...base,
+          newProduct: {
+            name: base.name,
+            category: row.category || OTHERS_CATEGORY,
             brand: row.details.brand,
-            costPrice: roundMoney(row.costPrice),
             salePrice: row.details.salePrice ?? undefined,
-            stock: 0,
             reorderLevel: row.details.reorderLevel,
             shelf: row.details.shelf
-          })
-        )
-        productId = product.id
-        madeProducts.set(key, productId)
-      }
-      entries.push({ productId, qty: row.qty, costPrice: row.costPrice })
-    }
-
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: categoryKeys.all }),
-      queryClient.invalidateQueries({ queryKey: productKeys.all })
-    ])
-    return entries
+          }
+        }
+      })
   }
 
   return { session, start, clear, addRow, patchRow, pickProduct, pickNew, commit }

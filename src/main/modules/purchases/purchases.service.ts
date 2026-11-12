@@ -10,7 +10,14 @@ import type {
 } from '@shared/purchases/types'
 import { getDb, type DbOrTx } from '../../db/connection'
 import { UserError } from '../../lib/ipc'
-import { findProductById, increaseStock, updateProductRow } from '../products/products.queries'
+import { findCategoryByName, insertCategory } from '../categories/categories.queries'
+import {
+  findProductById,
+  findProductByName,
+  increaseStock,
+  updateProductRow
+} from '../products/products.queries'
+import { createProductIn } from '../products/products.service'
 import { findActiveSupplierById } from '../suppliers/suppliers.queries'
 import * as q from './purchases.queries'
 
@@ -34,16 +41,38 @@ export function createPurchase(input: CreatePurchaseInput): Purchase {
       throw new UserError('Choose a supplier from the list.')
     }
 
-    const productIds = input.items.map((item) => item.productId)
+    // An item is one of your products, or a new one that is made right here, inside this transaction: if anything
+    // fails, no category or product is kept. A new product whose name already exists is the existing product.
+    const lines = input.items.map((item) => {
+      if (item.productId) {
+        const product = findProductById(tx, item.productId)
+        if (!product) throw new UserError('One of the products no longer exists.')
+        return { item, product }
+      }
+      const details = item.newProduct!
+      const existing = findProductByName(tx, details.name.trim())
+      if (existing) return { item, product: findProductById(tx, existing.id)! }
+      const categoryName = details.category.trim()
+      const categoryId =
+        findCategoryByName(tx, categoryName)?.id ??
+        insertCategory(tx, { id: randomUUID(), name: categoryName }).id
+      const product = createProductIn(tx, {
+        name: details.name,
+        categoryId,
+        brand: details.brand,
+        shelf: details.shelf,
+        salePrice: details.salePrice,
+        reorderLevel: details.reorderLevel,
+        costPrice: item.costPrice,
+        stock: 0
+      })
+      return { item, product }
+    })
+
+    const productIds = lines.map(({ product }) => product.id)
     if (new Set(productIds).size !== productIds.length) {
       throw new UserError('Each product can be on the bill only once.')
     }
-
-    const lines = input.items.map((item) => {
-      const product = findProductById(tx, item.productId)
-      if (!product) throw new UserError('One of the products no longer exists.')
-      return { item, product }
-    })
 
     const total = roundMoney(lines.reduce((sum, { item }) => sum + item.qty * item.costPrice, 0))
     if (input.paid > total) throw new UserError('Money paid cannot be more than the total.')
