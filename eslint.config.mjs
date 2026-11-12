@@ -38,5 +38,13 @@ export default defineConfig(
     ],
     rules: { 'react-refresh/only-export-components': 'off' }
   },
+  {
+    // Plain Node scripts (CommonJS), not app code
+    files: ['scripts/**/*.cjs'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off'
+    }
+  },
   eslintConfigPrettier
 )
