@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Add, Link } from 'reicon-react'
+import { Add, Link, Trash } from 'reicon-react'
 
 import { CategoryFormDialog } from '@/features/categories/components/category-form-dialog'
 import { FormField } from '@/components/shared/form-field'
@@ -25,7 +25,8 @@ export function ProductFormDialog({
   product,
   onSaved,
   stockFromBill,
-  draft
+  draft,
+  onDelete
 }: ProductFormDialogProps): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -36,6 +37,7 @@ export function ProductFormDialog({
             onSaved={onSaved}
             stockFromBill={stockFromBill}
             draft={draft}
+            onDelete={onDelete}
             onDone={() => onOpenChange(false)}
           />
         ) : null}
@@ -53,7 +55,7 @@ function SectionTitle({ children }: { children: string }): React.JSX.Element {
 }
 
 function ProductForm(props: ProductFormProps): React.JSX.Element {
-  const { product, draft, onDone } = props
+  const { product, draft, onDone, onDelete } = props
   const {
     form,
     errors,
@@ -204,6 +206,12 @@ function ProductForm(props: ProductFormProps): React.JSX.Element {
       </div>
 
       <DialogFooter>
+        {product && onDelete ? (
+          <Button variant="ghost" className="text-destructive sm:mr-auto" onClick={onDelete}>
+            <Trash data-icon="inline-start" />
+            Delete product
+          </Button>
+        ) : null}
         {draft?.onUseExisting ? (
           <Button
             variant="outline"

@@ -58,6 +58,7 @@ export type ProductFormDialogProps = {
   onSaved?: (product: Product) => void
   stockFromBill?: boolean
   draft?: ProductDraft
+  onDelete?: () => void // shown only when editing: a quiet Delete at the bottom left of the dialog
 }
 
 export type ProductFormProps = {
@@ -65,6 +66,7 @@ export type ProductFormProps = {
   onSaved?: (product: Product) => void
   stockFromBill?: boolean
   draft?: ProductDraft
+  onDelete?: () => void
   onDone: () => void
 }
 
@@ -95,7 +97,6 @@ export type ProductsTableProps = {
   products: Product[]
   onEdit: (product: Product) => void
   onAddStock: (product: Product) => void
-  onDelete: (product: Product) => void
 }
 
 export type ProductDeleteDialogProps = {

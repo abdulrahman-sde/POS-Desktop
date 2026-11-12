@@ -1,7 +1,6 @@
-import { Add, Box, Edit, Trash } from 'reicon-react'
+import { Add, Box, Edit } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
-import { SHOW_DELETE_BUTTONS } from '@/lib/features'
 import { StockBadge } from '@/components/shared/stock-badge'
 import { CategoryChip } from '@/components/shared/category-chip'
 import { Button } from '@/components/ui/button'
@@ -20,8 +19,7 @@ import { PRODUCT_UNIT, type ProductsTableProps } from '../types'
 export function ProductsTable({
   products,
   onEdit,
-  onAddStock,
-  onDelete
+  onAddStock
 }: ProductsTableProps): React.JSX.Element {
   return (
     <Card className="gap-0 px-3 py-1">
@@ -82,16 +80,6 @@ export function ProductsTable({
                     >
                       <Edit />
                     </Button>
-                    {SHOW_DELETE_BUTTONS ? (
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Delete ${product.name}`}
-                        onClick={() => onDelete(product)}
-                      >
-                        <Trash />
-                      </Button>
-                    ) : null}
                   </div>
                 </TableCell>
               </TableRow>

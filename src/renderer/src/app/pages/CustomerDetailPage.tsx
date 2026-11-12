@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { AngleLeft, Edit, Receipt, TickCircle, Trash, Users, Wallet } from 'reicon-react'
+import { AngleLeft, Edit, Receipt, TickCircle, Users, Wallet } from 'reicon-react'
 import { Link, useNavigate, useParams } from 'react-router'
 
 import { useSettings } from '@/features/settings/hooks/use-settings'
-import { SHOW_DELETE_BUTTONS } from '@/lib/features'
+import { SHOW_DELETE } from '@/lib/features'
 import { usePayments } from '@/features/payments/hooks/use-payments'
 import { useInvoices } from '@/features/sales/hooks/use-invoices'
 import { useOrders } from '@/features/sales/hooks/use-orders'
@@ -93,21 +93,6 @@ export function CustomerDetailPage(): React.JSX.Element {
               <Edit data-icon="inline-start" />
               Edit
             </Button>
-            {SHOW_DELETE_BUTTONS ? (
-              <Button
-                variant="outline"
-                disabled={owed > 0}
-                title={
-                  owed > 0
-                    ? 'This customer still owes you money. Receive payment first.'
-                    : undefined
-                }
-                onClick={() => setDeleteOpen(true)}
-              >
-                <Trash data-icon="inline-start" />
-                Delete
-              </Button>
-            ) : null}
           </>
         }
       />
@@ -157,7 +142,19 @@ export function CustomerDetailPage(): React.JSX.Element {
         onOpenChange={setPaymentOpen}
         customerId={customer.id}
       />
-      <CustomerFormDialog open={editOpen} onOpenChange={setEditOpen} customer={customer} />
+      <CustomerFormDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        customer={customer}
+        onDelete={
+          SHOW_DELETE.customers
+            ? () => {
+                setEditOpen(false)
+                setDeleteOpen(true)
+              }
+            : undefined
+        }
+      />
       <CustomerDeleteDialog
         customer={customer}
         open={deleteOpen}

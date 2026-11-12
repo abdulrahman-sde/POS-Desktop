@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AddStockDialog } from '@/features/products/components/add-stock-dialog'
 import { ProductDeleteDialog } from '@/features/products/components/product-delete-dialog'
+import { SHOW_DELETE } from '@/lib/features'
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog'
 import { ProductsTable } from '@/features/products/components/products-table'
 import { useProducts } from '@/features/products/hooks/use-products'
@@ -98,14 +99,21 @@ export function ProductsPage(): React.JSX.Element {
         </Tabs>
       </div>
 
-      <ProductsTable
-        products={filters.filtered}
-        onEdit={openForm}
-        onAddStock={setStockTarget}
-        onDelete={setDeleting}
-      />
+      <ProductsTable products={filters.filtered} onEdit={openForm} onAddStock={setStockTarget} />
 
-      <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />
+      <ProductFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        product={editing}
+        onDelete={
+          SHOW_DELETE.products && editing
+            ? () => {
+                setFormOpen(false)
+                setDeleting(editing)
+              }
+            : undefined
+        }
+      />
       {deleting ? (
         <ProductDeleteDialog
           product={deleting}

@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 
 import { EmptyState } from '@/components/shared/empty-state'
-import { SHOW_DELETE_BUTTONS } from '@/lib/features'
+import { SHOW_DELETE } from '@/lib/features'
 import { Badge } from '@/components/ui/badge'
 import { DialogItemName } from '@/components/shared/dialog-item-name'
 import { Button } from '@/components/ui/button'
@@ -86,7 +86,7 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }): React.JSX.El
                     >
                       <Edit />
                     </Button>
-                    {SHOW_DELETE_BUTTONS ? (
+                    {SHOW_DELETE.categories ? (
                       <Button
                         variant="ghost"
                         size="icon-sm"

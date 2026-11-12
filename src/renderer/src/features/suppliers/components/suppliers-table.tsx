@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Edit, Shop, Trash } from 'reicon-react'
 
 import { EmptyState } from '@/components/shared/empty-state'
-import { SHOW_DELETE_BUTTONS } from '@/lib/features'
+import { SHOW_DELETE } from '@/lib/features'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -79,7 +79,7 @@ export function SuppliersTable({ rows }: { rows: SupplierRow[] }): React.JSX.Ele
                       >
                         <Edit />
                       </Button>
-                      {SHOW_DELETE_BUTTONS ? (
+                      {SHOW_DELETE.suppliers ? (
                         <Button
                           variant="ghost"
                           size="icon-sm"

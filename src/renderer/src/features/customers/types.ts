@@ -30,11 +30,13 @@ export type CustomerFormDialogProps = {
   onOpenChange: (open: boolean) => void
   customer?: Customer
   onSaved?: (customer: Customer) => void
+  onDelete?: () => void // shown only when editing: a quiet Delete at the bottom left of the dialog
 }
 
 export type CustomerFormProps = {
   customer?: Customer
   onSaved?: (customer: Customer) => void
+  onDelete?: () => void
   onDone: () => void
 }
 

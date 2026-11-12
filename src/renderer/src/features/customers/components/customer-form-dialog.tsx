@@ -1,3 +1,5 @@
+import { Trash } from 'reicon-react'
+
 import { FormField } from '@/components/shared/form-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,13 +18,19 @@ export function CustomerFormDialog({
   open,
   onOpenChange,
   customer,
-  onSaved
+  onSaved,
+  onDelete
 }: CustomerFormDialogProps): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         {open ? (
-          <CustomerForm customer={customer} onSaved={onSaved} onDone={() => onOpenChange(false)} />
+          <CustomerForm
+            customer={customer}
+            onSaved={onSaved}
+            onDelete={onDelete}
+            onDone={() => onOpenChange(false)}
+          />
         ) : null}
       </DialogContent>
     </Dialog>
@@ -30,7 +38,7 @@ export function CustomerFormDialog({
 }
 
 function CustomerForm(props: CustomerFormProps): React.JSX.Element {
-  const { customer, onDone } = props
+  const { customer, onDone, onDelete } = props
   const { form, errors, saving, text, submit } = useCustomerForm(props)
 
   return (
@@ -63,6 +71,12 @@ function CustomerForm(props: CustomerFormProps): React.JSX.Element {
       </div>
 
       <DialogFooter>
+        {customer && onDelete ? (
+          <Button variant="ghost" className="text-destructive sm:mr-auto" onClick={onDelete}>
+            <Trash data-icon="inline-start" />
+            Delete customer
+          </Button>
+        ) : null}
         <Button variant="outline" onClick={onDone}>
           Cancel
         </Button>
