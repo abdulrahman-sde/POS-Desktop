@@ -6,6 +6,7 @@ import { useProducts } from '@/features/products/hooks/use-products'
 import { EmptyState } from '@/components/shared/empty-state'
 import { SearchField } from '@/components/shared/search-field'
 import { Button } from '@/components/ui/button'
+import { matchesSearch } from '@/lib/search'
 import type { Product } from '@/features/products/types'
 import { PosProductTile } from './pos-product-tile'
 import { Box } from 'reicon-react'
@@ -36,13 +37,9 @@ export function PosProductPicker({
     .filter((name) => products.some((product) => product.category === name))
 
   const visible = useMemo(() => {
-    const text = query.trim().toLowerCase()
     return products.filter((product) => {
       if (category !== 'all' && product.category !== category) return false
-      if (!text) return true
-      return [product.name, product.itemCode, product.brand].some((value) =>
-        value.toLowerCase().includes(text)
-      )
+      return matchesSearch(query, [product.name, product.itemCode, product.brand])
     })
   }, [products, query, category])
 

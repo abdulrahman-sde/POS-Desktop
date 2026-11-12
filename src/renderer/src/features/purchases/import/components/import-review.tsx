@@ -136,7 +136,7 @@ export function ImportReview({
 
   const remove = (row: ImportRow): void => {
     patchRow(row.id, { included: false })
-    toast(`${row.invoiceName || row.name || 'Item'} removed`, {
+    toast(`${row.invoiceName || row.name || 'Item'} left out`, {
       action: { label: 'Undo', onClick: () => patchRow(row.id, { included: true }) }
     })
   }
@@ -301,8 +301,8 @@ export function ImportReview({
                           binColumn,
                           'order-1 size-5 @row:order-none @row:justify-self-center'
                         )}
-                        aria-label={`Remove item ${number}`}
-                        title="Remove"
+                        aria-label={`Leave out item ${number}`}
+                        title="Leave out"
                         onClick={() => remove(row)}
                       >
                         <Trash className="size-3.5" />

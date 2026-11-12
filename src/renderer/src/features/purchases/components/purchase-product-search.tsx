@@ -7,6 +7,7 @@ import { ProductFormDialog } from '@/features/products/components/product-form-d
 import { useProducts } from '@/features/products/hooks/use-products'
 import { PRODUCT_UNIT, type Product } from '@/features/products/types'
 import { cn } from '@/lib/utils'
+import { matchesSearch } from '@/lib/search'
 import { selectedClasses } from '@/components/shared/selected-classes'
 import type { PurchaseProductSearchProps } from '../types'
 
@@ -17,14 +18,9 @@ export function PurchaseProductSearch({ onAdd }: PurchaseProductSearchProps): Re
   const [active, setActive] = useState(0)
 
   const matches = useMemo(() => {
-    const text = query.trim().toLowerCase()
-    if (!text) return []
+    if (!query.trim()) return []
     return products
-      .filter((product) =>
-        [product.name, product.itemCode, product.brand].some((value) =>
-          value.toLowerCase().includes(text)
-        )
-      )
+      .filter((product) => matchesSearch(query, [product.name, product.itemCode, product.brand]))
       .slice(0, 6)
   }, [products, query])
 

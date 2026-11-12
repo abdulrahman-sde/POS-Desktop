@@ -14,6 +14,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { matchesSearch } from '@/lib/search'
 
 type ChooseProductDialogProps = {
   lineName: string | null // the invoice wording. The dialog is open while this is set
@@ -53,13 +54,8 @@ function Chooser({
 
   // Your products in name order, narrowed by what you type. The list scrolls, so every product can be reached.
   const shown = useMemo(() => {
-    const text = query.trim().toLowerCase()
     const sorted = [...products].sort((a, b) => a.name.localeCompare(b.name))
-    return text
-      ? sorted.filter((p) =>
-          [p.name, p.brand, p.category].some((value) => value.toLowerCase().includes(text))
-        )
-      : sorted
+    return sorted.filter((p) => matchesSearch(query, [p.name, p.brand, p.category]))
   }, [products, query])
 
   const newRow = shown.length // the last row is always "Add as a new product"
