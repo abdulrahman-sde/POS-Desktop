@@ -11,6 +11,7 @@ import { productsPreload } from './modules/products'
 import { purchasesPreload } from './modules/purchases'
 import { salesPreload } from './modules/sales'
 import { settingsPreload } from './modules/settings'
+import { starterPreload } from './modules/starter'
 import { suppliersPreload } from './modules/suppliers'
 
 // Everything the screen may ask the backend to do. Add a line here when you add a module.
@@ -27,6 +28,7 @@ export const api = {
   purchases: purchasesPreload,
   sales: salesPreload,
   settings: settingsPreload,
+  starter: starterPreload,
   suppliers: suppliersPreload
 }
 

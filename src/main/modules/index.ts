@@ -8,6 +8,7 @@ import { registerProductsIpc } from './products/products.ipc'
 import { registerPurchasesIpc } from './purchases/purchases.ipc'
 import { registerSalesIpc } from './sales/sales.ipc'
 import { registerSettingsIpc } from './settings/settings.ipc'
+import { registerStarterIpc } from './starter/starter.ipc'
 import { registerSuppliersIpc } from './suppliers/suppliers.ipc'
 
 export function registerAllIpc(): void {
@@ -21,5 +22,6 @@ export function registerAllIpc(): void {
   registerPurchasesIpc()
   registerSalesIpc()
   registerSettingsIpc()
+  registerStarterIpc()
   registerSuppliersIpc()
 }
