@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { startAutoBackup } from './backup/auto-backup'
+import { startUpdater } from './updater'
 import { closeDb, initDb } from './db/connection'
 import { registerAllIpc } from './modules'
 import { setUnlocked } from './lib/session'
@@ -78,6 +79,7 @@ app.whenReady().then(() => {
   // Turn on every backend route (categories, products ...).
   registerAllIpc()
   startAutoBackup()
+  startUpdater()
 
   // A packaged Mac app already has its icon; while developing, set the dock one by hand.
   if (process.platform === 'darwin' && !app.isPackaged) app.dock?.setIcon(icon)

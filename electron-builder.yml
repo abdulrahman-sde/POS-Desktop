@@ -29,6 +29,12 @@ nsis:
   createDesktopShortcut: always
   oneClick: false
   allowToChangeInstallationDirectory: true
+
+publish:
+  provider: github
+  owner: abdulrahman-sde
+  repo: POS-Desktop
+
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -48,4 +54,10 @@ linux:
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
+# Where installed copies look for a newer version (a GitHub Release of this repo). Never rename or delete the repo
+# once a client has the app: the address is built into every installed copy.
+publish:
+  provider: github
+  owner: abdulrahman-sde
+  repo: POS-Desktop
 npmRebuild: false

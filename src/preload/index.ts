@@ -12,6 +12,7 @@ import { purchasesPreload } from './modules/purchases'
 import { salesPreload } from './modules/sales'
 import { settingsPreload } from './modules/settings'
 import { starterPreload } from './modules/starter'
+import { updatePreload } from './modules/update'
 import { suppliersPreload } from './modules/suppliers'
 
 // Everything the screen may ask the backend to do. Add a line here when you add a module.
@@ -29,7 +30,8 @@ export const api = {
   sales: salesPreload,
   settings: settingsPreload,
   starter: starterPreload,
-  suppliers: suppliersPreload
+  suppliers: suppliersPreload,
+  update: updatePreload
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
